@@ -1,0 +1,242 @@
+<% layout('layouts/boilerplate') %>
+
+<style>
+  #filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter {
+    text-align: center;
+    margin-right: 2rem;
+    margin-top: 2rem;
+    opacity: 0.7;
+  }
+
+  .filter:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .filter p {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+  }
+
+  #filters a {
+    text-decoration: none;
+    color: black;
+  }
+
+  .tax-toggle {
+    border: 1px solid black;
+    border-radius: 1rem;
+    height: 2.5rem;
+    padding: 1rem;
+    margin-left: 2rem;
+    display: flex;
+    align-items: center;
+  }
+</style>
+
+<div id="filters">
+
+  <a href="/listings/category/Trending">
+    <div class="filter">
+      <div><i class="fa-solid fa-fire"></i></div>
+      <p>Trending</p>
+    </div>
+  </a>
+
+  <a href="/listings/category/Rooms">
+    <div class="filter">
+      <div><i class="fa-solid fa-bed"></i></div>
+      <p>Rooms</p>
+    </div>
+  </a>
+
+  <a href="/listings/category/Iconic Cities">
+    <div class="filter">
+      <div><i class="fa-solid fa-mountain-city"></i></div>
+      <p>Iconic Cities</p>
+    </div>
+  </a>
+
+  <a href="/listings/category/Mountain">
+    <div class="filter">
+      <div><i class="fa-solid fa-mountain"></i></div>
+      <p>Mountain</p>
+    </div>
+  </a>
+
+  <a href="/listings/category/Castles">
+    <div class="filter">
+      <div><i class="fa-brands fa-fort-awesome"></i></div>
+      <p>Castles</p>
+    </div>
+  </a>
+
+  <a href="/listings/category/Arctic">
+    <div class="filter">
+      <div><i class="fa-regular fa-snowflake"></i></div>
+      <p>Arctic</p>
+    </div>
+  </a>
+
+  <a href="/listings/category/Camping">
+    <div class="filter">
+      <div><i class="fa-solid fa-campground"></i></div>
+      <p>Camping</p>
+    </div>
+  </a>
+
+  <a href="/listings/category/Farms">
+    <div class="filter">
+      <div><i class="fa-solid fa-cow"></i></div>
+      <p>Farms</p>
+    </div>
+  </a>
+
+  <a href="/listings/category/Amazing Pools">
+    <div class="filter">
+      <div><i class="fa-solid fa-person-swimming"></i></div>
+      <p>Amazing Pools</p>
+    </div>
+  </a>
+
+  <a href="/listings/category/Domes">
+    <div class="filter">
+      <div><i class="fa-solid fa-igloo"></i></div>
+      <p>Domes</p>
+    </div>
+  </a>
+
+  <a href="/listings/category/Boats">
+    <div class="filter">
+      <div><i class="fa-solid fa-sailboat"></i></div>
+      <p>Boats</p>
+    </div>
+  </a>
+
+  <div class="tax-toggle">
+    <div class="form-check-reverse form-switch">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        role="switch"
+        id="switchCheckDefault"
+      >
+      <label class="form-check-label" for="switchCheckDefault">
+        Display total after taxes
+      </label>
+    </div>
+  </div>
+
+</div>
+
+<div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 mt-3">
+
+  <% for(let listing of listings) { %>
+
+    <a href="/listings/<%= listing._id %>" class="listing-link">
+
+      <div class="card col listing-card">
+
+        <img
+          src="<%= listing.image.url %>"
+          class="card-img-top"
+          style="height:20rem;"
+        >
+
+        <div class="card-img-overlay"></div>
+
+        <div class="card-body">
+
+          <p class="card-text">
+
+            <b><%= listing.title %></b>
+
+            <br>
+
+            <span class="base-price">
+              &#8377;
+              <%= listing.price.toLocaleString('en-IN') %>
+              / night
+            </span>
+
+            <span class="tax-price" style="display:none;">
+              &#8377;
+              <%= Math.round(listing.price * 1.18).toLocaleString('en-IN') %>
+              / night
+            </span>
+
+            <br>
+
+            <% if(listing.category){ %>
+              <small class="text-muted">
+                <%= listing.category %>
+              </small>
+            <% } %>
+
+          </p>
+
+        </div>
+
+      </div>
+
+    </a>
+
+  <% } %>
+
+</div>
+
+<script>
+const taxSwitch = document.getElementById("switchCheckDefault");
+
+function updatePrices(showTax) {
+
+    const basePrices = document.querySelectorAll(".base-price");
+    const taxPrices = document.querySelectorAll(".tax-price");
+
+    if(showTax) {
+
+        basePrices.forEach(price => {
+            price.style.display = "none";
+        });
+
+        taxPrices.forEach(price => {
+            price.style.display = "inline";
+        });
+
+    } else {
+
+        basePrices.forEach(price => {
+            price.style.display = "inline";
+        });
+
+        taxPrices.forEach(price => {
+            price.style.display = "none";
+        });
+
+    }
+}
+
+const savedPreference = localStorage.getItem("showTax");
+
+if(savedPreference === "true") {
+    taxSwitch.checked = true;
+    updatePrices(true);
+}
+
+taxSwitch.addEventListener("change", () => {
+
+    localStorage.setItem(
+        "showTax",
+        taxSwitch.checked
+    );
+
+    updatePrices(taxSwitch.checked);
+
+});
+</script>
