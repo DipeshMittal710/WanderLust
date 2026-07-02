@@ -12,6 +12,20 @@ module.exports.listingSchema = Joi.object({
 
         price: Joi.number().required().min(0),
 
+        category: Joi.string().valid(
+            "Trending",
+            "Rooms",
+            "Iconic Cities",
+            "Mountain",
+            "Castles",
+            "Arctic",
+            "Camping",
+            "Farms",
+            "Amazing Pools",
+            "Domes",
+            "Boats"
+        ).required(),
+
         image: Joi.object({
             url: Joi.string().allow("", null)
         }).default({})

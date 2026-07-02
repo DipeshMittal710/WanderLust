@@ -1,23 +1,28 @@
 <% layout('layouts/boilerplate') %>
 
-<div class="row mt-3">
-    <div class="col-8 offset-2">
+<section class="host-form-page">
+    <div class="host-form-intro">
+        <p class="eyebrow">Become a host</p>
+        <h1>List a stay guests will want to book.</h1>
+        <p>Add the essentials: a strong title, helpful description, category, location, and nightly price.</p>
+    </div>
 
-        <h3>Create New Listing</h3>
-
-        <form
-            method="POST"
-            action="/listings"
-            novalidate
-            class="needs-validation"
-            enctype="multipart/form-data"
-        >
+    <form
+        method="POST"
+        action="/listings"
+        novalidate
+        class="needs-validation listing-form"
+        enctype="multipart/form-data"
+    >
+        <div class="form-section">
+            <h2>Stay details</h2>
 
             <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
                 <input
+                    id="title"
                     name="listing[title]"
-                    placeholder="Add a catchy title"
+                    placeholder="Cozy beach villa with private pool"
                     type="text"
                     class="form-control"
                     required
@@ -30,8 +35,10 @@
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
                 <textarea
+                    id="description"
                     name="listing[description]"
                     class="form-control"
+                    rows="5"
                     required
                 ></textarea>
 
@@ -39,72 +46,6 @@
                     Please enter a short description
                 </div>
             </div>
-
-            <div class="mb-3">
-                <label for="image" class="form-label">
-                    Upload Listing Image
-                </label>
-
-                <input
-    name="listing[image]"
-    type="file"
-    class="form-control"
-    required
->
-            </div>
-
-            <div class="row">
-
-                <div class="mb-3 col-md-4">
-                    <label for="price" class="form-label">Price</label>
-
-                    <input
-                        name="listing[price]"
-                        placeholder="1200"
-                        class="form-control"
-                        required
-                    >
-
-                    <div class="invalid-feedback">
-                        Price should be valid
-                    </div>
-                </div>
-
-                <div class="mb-3 col-md-8">
-                    <label for="country" class="form-label">Country</label>
-
-                    <input
-                        name="listing[country]"
-                        placeholder="India"
-                        type="text"
-                        class="form-control"
-                        required
-                    >
-
-                    <div class="invalid-feedback">
-                        Country name should be valid
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="mb-3">
-                <label for="location" class="form-label">Location</label>
-
-                <input
-                    name="listing[location]"
-                    placeholder="Mussoorie, Uttarakhand"
-                    type="text"
-                    class="form-control"
-                    required
-                >
-
-                <div class="invalid-feedback">
-                    Location should be valid
-                </div>
-            </div>
-
-            <!-- CATEGORY DROPDOWN -->
 
             <div class="mb-3">
                 <label for="category" class="form-label">
@@ -117,7 +58,7 @@
                     class="form-select"
                     required
                 >
-                    <option value="">Select Category</option>
+                    <option value="">Select category</option>
                     <option value="Trending">Trending</option>
                     <option value="Rooms">Rooms</option>
                     <option value="Iconic Cities">Iconic Cities</option>
@@ -135,12 +76,82 @@
                     Please select a category
                 </div>
             </div>
+        </div>
 
-            <button class="btn btn-dark add-btn mt-3">
-                Add
-            </button>
+        <div class="form-section">
+            <h2>Photo and pricing</h2>
 
-        </form>
+            <div class="mb-3">
+                <label for="image" class="form-label">
+                    Upload listing image
+                </label>
 
-    </div>
-</div>
+                <input
+                    id="image"
+                    name="listing[image]"
+                    type="file"
+                    class="form-control"
+                    required
+                >
+            </div>
+
+            <div class="row">
+                <div class="mb-3 col-md-4">
+                    <label for="price" class="form-label">Nightly price</label>
+
+                    <input
+                        id="price"
+                        name="listing[price]"
+                        placeholder="1200"
+                        type="number"
+                        min="0"
+                        class="form-control"
+                        required
+                    >
+
+                    <div class="invalid-feedback">
+                        Price should be valid
+                    </div>
+                </div>
+
+                <div class="mb-3 col-md-8">
+                    <label for="country" class="form-label">Country</label>
+
+                    <input
+                        id="country"
+                        name="listing[country]"
+                        placeholder="India"
+                        type="text"
+                        class="form-control"
+                        required
+                    >
+
+                    <div class="invalid-feedback">
+                        Country name should be valid
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+
+                <input
+                    id="location"
+                    name="listing[location]"
+                    placeholder="Mussoorie, Uttarakhand"
+                    type="text"
+                    class="form-control"
+                    required
+                >
+
+                <div class="invalid-feedback">
+                    Location should be valid
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-dark add-btn">
+            Publish listing
+        </button>
+    </form>
+</section>

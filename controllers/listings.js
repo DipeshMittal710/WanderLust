@@ -2,11 +2,12 @@ const Listing = require('../models/listing');
 const axios = require("axios");
 
 module.exports.index = async (req, res) => {
-    const allListings = await Listing.find({});
+    const allListings = await Listing.find({}).populate("reviews");
 
 
     res.render('listings/index.ejs', {
-        listings: allListings
+        listings: allListings,
+        activeCategory: "All"
     });
 };
 
@@ -15,10 +16,11 @@ module.exports.filterByCategory = async (req, res) => {
 
     const listings = await Listing.find({
         category: category
-    });
+    }).populate("reviews");
 
     res.render("listings/index.ejs", {
-        listings
+        listings,
+        activeCategory: category
     });
 };
 
@@ -50,6 +52,10 @@ module.exports.showListing = async (req, res) => {
 };
 
 module.exports.createListing = async (req, res) => {
+    if (!req.file) {
+        req.flash("error", "Please upload a listing image.");
+        return res.redirect("/listings/new");
+    }
 
     let url = req.file.path;
     let filename = req.file.filename;
@@ -171,9 +177,11 @@ module.exports.searchListings = async (req, res) => {
             { country: { $regex: q, $options: "i" } },
             { category: { $regex: q, $options: "i" } }
         ]
-    });
+    }).populate("reviews");
 
     res.render("listings/index.ejs", {
-        listings
+        listings,
+        searchQuery: q,
+        activeCategory: "All"
     });
 };

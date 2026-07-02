@@ -1,82 +1,77 @@
-<style>
-  .search-btn {
-    background-color: #fe424d;
-    color: #fff;
-    border-radius: 25px;
-    padding: 0 1rem 0 1rem;
-  }
+<nav class="navbar navbar-expand-lg border-bottom sticky-top wander-navbar">
+  <div class="container-fluid nav-shell">
+    <a class="navbar-brand brand-lockup" href="/listings" aria-label="WanderLust home">
+      <i class="fa-regular fa-compass"></i>
+      <span>WanderLust</span>
+    </a>
 
-  .search-btn:hover {
-    background-color: #fe424d;
-    color: #fff;
-  }
-
-  .search-btn i {
-    display: inline;
-    margin-right: 0.5rem;
-  }
-
-  .search-input {
-    border-radius: 25px;
-    padding: 0.5rem 3rem 0.5rem 3rem;
-    font-size: 1rem;
-  }
-</style>
-
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/listings"><i class="fa-regular fa-compass"></i></a>
-    <button class="navbar-toggler" 
-      type="button" 
-      data-bs-toggle="collapse" 
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
       data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
     >
-    <span class="navbar-toggler-icon">
-    </span>
+      <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
+      <div class="navbar-nav nav-primary">
         <a class="nav-link" href="/listings">Explore</a>
       </div>
 
-      <div class="navbar-nav ms-auto">
-  <form
-    class="d-flex"
-    role="search"
-    action="/listings/search"
-    method="GET"
-  >
+      <form
+        class="nav-search"
+        role="search"
+        action="/listings/search"
+        method="GET"
+      >
+        <label class="nav-search-segment nav-search-input-wrap">
+          <span>Where</span>
+          <input
+            type="search"
+            name="q"
+            placeholder="Search destinations"
+            value="<%= locals.searchQuery || '' %>"
+            required
+          />
+        </label>
 
-    <input
-      class="form-control me-2 search-input"
-      type="search"
-      name="q"
-      placeholder="Search destinations"
-      required
-    />
+        <span class="nav-search-segment nav-search-static">
+          <span>Check in</span>
+          <small>Add dates</small>
+        </span>
 
-    <button class="btn search-btn" type="submit">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      Search
-    </button>
+        <span class="nav-search-segment nav-search-static">
+          <span>Who</span>
+          <small>Add guests</small>
+        </span>
 
-  </form>
-</div>
+        <button class="nav-search-button" type="submit" aria-label="Search stays">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
 
-      <div class="navbar-nav ms-auto">
-        
-        <a class="nav-link" href="/listings/new">Airbnb your home</a>
-        <% if(!currUser) { %>
-          <a class="nav-link" href="/signup"><b>Signup</b></a>
-          <a class="nav-link" href="/login"><b>Login</b></a>
-        <% }  %>
-        <% if(currUser) { %>
-          <a class="nav-link" href="/logout"><b>Logout</b></a>
+      <div class="navbar-nav nav-actions">
+        <a class="nav-link host-link" href="/listings/new">Host your home</a>
+        <a class="nav-icon-link" href="/listings" aria-label="Explore globally" title="Explore globally">
+          <i class="fa-solid fa-globe"></i>
+        </a>
+
+        <% if (!locals.currUser) { %>
+          <a class="nav-link fw-semibold" href="/signup">Signup</a>
+          <a class="nav-link fw-semibold" href="/login">Login</a>
+        <% } else { %>
+          <span class="nav-user-pill">
+            <i class="fa-solid fa-bars"></i>
+            <i class="fa-solid fa-circle-user"></i>
+            <span><%= locals.currUser.username %></span>
+          </span>
+          <a class="nav-link fw-semibold" href="/logout">Logout</a>
         <% } %>
       </div>
     </div>
   </div>
 </nav>
-
-
-
