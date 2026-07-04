@@ -10,23 +10,35 @@
     const taxes = Math.round(nightlyPrice * 0.18);
     const oneNightTotal = nightlyPrice + serviceFee + taxes;
     const locationLine = [listing.location, listing.country].filter(Boolean).join(", ");
-    const imageUrl = listing.image && listing.image.url
-        ? listing.image.url
-        : "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=70";
+    const imageList = (listing.images && listing.images.length)
+        ? listing.images
+        : (listing.image && listing.image.url ? [listing.image] : []);
+    const fallbackImageUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=70";
+    const imageUrl = imageList[0] ? imageList[0].url : fallbackImageUrl;
+    const photoSlots = [0, 1, 2, 3].map(i => imageList[i] ? imageList[i].url : imageUrl);
+    const extraPhotoCount = Math.max(0, imageList.length - 4);
     const hostName = listing.owner && listing.owner.username ? listing.owner.username : "WanderLust host";
-    const bedrooms = Math.max(1, Math.min(5, Math.ceil(nightlyPrice / 1500)));
-    const guests = bedrooms * 2;
+    const guests = listing.maxGuests || 2;
+    const bedrooms = Math.max(1, Math.ceil(guests / 2));
     const hasCoordinates = listing.geometry
         && listing.geometry.coordinates
         && listing.geometry.coordinates.length === 2;
-    const amenities = [
-        { icon: "fa-solid fa-wifi", label: "Fast wifi" },
-        { icon: "fa-solid fa-car", label: "Free parking" },
-        { icon: "fa-solid fa-kitchen-set", label: "Kitchen" },
-        { icon: "fa-solid fa-snowflake", label: "Air conditioning" },
-        { icon: "fa-solid fa-key", label: "Self check-in" },
-        { icon: "fa-solid fa-shield-heart", label: "Safety essentials" }
-    ];
+    const amenityIcons = {
+        "Wifi": "fa-solid fa-wifi",
+        "Free parking": "fa-solid fa-car",
+        "Kitchen": "fa-solid fa-kitchen-set",
+        "Air conditioning": "fa-solid fa-snowflake",
+        "Self check-in": "fa-solid fa-key",
+        "Safety essentials": "fa-solid fa-shield-heart",
+        "Swimming pool": "fa-solid fa-person-swimming",
+        "TV": "fa-solid fa-tv",
+        "Washer": "fa-solid fa-shirt",
+        "Workspace": "fa-solid fa-laptop",
+        "Pet friendly": "fa-solid fa-paw",
+        "Breakfast included": "fa-solid fa-mug-saucer"
+    };
+    const amenities = ((listing.amenities && listing.amenities.length) ? listing.amenities : [])
+        .map(name => ({ icon: amenityIcons[name] || "fa-solid fa-circle-check", label: name }));
 %>
 
 <section class="listing-detail-heading">
@@ -58,17 +70,21 @@
 
 <section class="photo-showcase">
     <div class="photo-main">
-        <img src="<%= imageUrl %>" alt="<%= listing.title %>">
+        <img src="<%= photoSlots[0] %>" alt="<%= listing.title %>">
     </div>
     <div class="photo-stack">
-        <img src="<%= imageUrl %>" alt="<%= listing.title %> interior view">
-        <img src="<%= imageUrl %>" alt="<%= listing.title %> nearby view">
+        <img src="<%= photoSlots[1] %>" alt="<%= listing.title %> interior view">
+        <img src="<%= photoSlots[2] %>" alt="<%= listing.title %> nearby view">
     </div>
     <div class="photo-stack">
-        <img src="<%= imageUrl %>" alt="<%= listing.title %> stay detail">
+        <img src="<%= photoSlots[3] %>" alt="<%= listing.title %> stay detail">
         <button type="button" class="show-photos-btn">
             <i class="fa-solid fa-grip"></i>
-            Show all photos
+            <% if (extraPhotoCount > 0) { %>
+                +<%= extraPhotoCount %> more photo<%= extraPhotoCount === 1 ? '' : 's' %>
+            <% } else { %>
+                Show all photos
+            <% } %>
         </button>
     </div>
 </section>
@@ -77,8 +93,14 @@
     <main class="detail-main">
         <section class="host-summary">
             <div>
-                <h2>Entire place hosted by <%= hostName %></h2>
-                <p><%= guests %> guests · <%= bedrooms %> bedrooms · 1 bath</p>
+                <h2>Entire place hosted by
+                    <% if (listing.owner && listing.owner.username) { %>
+                        <a href="/users/<%= listing.owner._id %>" class="host-link"><%= hostName %></a>
+                    <% } else { %>
+                        <%= hostName %>
+                    <% } %>
+                </h2>
+                <p><%= guests %> guest<%= guests === 1 ? '' : 's' %> · <%= bedrooms %> bedroom<%= bedrooms === 1 ? '' : 's' %> · 1 bath</p>
             </div>
             <div class="host-avatar">
                 <i class="fa-solid fa-circle-user"></i>
@@ -118,14 +140,34 @@
 
         <section class="amenities-block">
             <h2>What this place offers</h2>
-            <div class="amenities-grid">
-                <% amenities.forEach(amenity => { %>
-                    <div>
-                        <i class="<%= amenity.icon %>"></i>
-                        <span><%= amenity.label %></span>
-                    </div>
-                <% }) %>
-            </div>
+            <% if (amenities.length) { %>
+                <div class="amenities-grid">
+                    <% amenities.forEach(amenity => { %>
+                        <div>
+                            <i class="<%= amenity.icon %>"></i>
+                            <span><%= amenity.label %></span>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p class="text-muted">The host hasn't listed amenities for this stay yet.</p>
+            <% } %>
+        </section>
+
+        <section class="amenities-block">
+            <h2>House rules</h2>
+            <% if (listing.houseRules && listing.houseRules.length) { %>
+                <div class="amenities-grid">
+                    <% listing.houseRules.forEach(rule => { %>
+                        <div>
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span><%= rule %></span>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p class="text-muted">The host hasn't listed any specific house rules.</p>
+            <% } %>
         </section>
 
         <% if(currUser && currUser._id.equals(listing.owner._id)) { %>
@@ -243,6 +285,29 @@
                         </div>
 
                         <p><%= review.comment %></p>
+
+                        <% if (review.hostReply && review.hostReply.text) { %>
+                            <div class="host-reply">
+                                <p class="host-reply-label"><i class="fa-solid fa-reply"></i> Response from <%= hostName %></p>
+                                <p><%= review.hostReply.text %></p>
+                            </div>
+                        <% } else if (currUser && listing.owner && currUser._id.equals(listing.owner._id)) { %>
+                            <form
+                                method="POST"
+                                action="/listings/<%= listing._id %>/reviews/<%= review._id %>/reply"
+                                class="host-reply-form"
+                            >
+                                <label for="reply-<%= review._id %>" class="form-label">Reply as host</label>
+                                <textarea
+                                    id="reply-<%= review._id %>"
+                                    name="reply[text]"
+                                    rows="2"
+                                    class="form-control"
+                                    required
+                                ></textarea>
+                                <button class="btn btn-sm btn-outline-dark mt-2">Post reply</button>
+                            </form>
+                        <% } %>
 
                         <% if(currUser && review.author && currUser._id.equals(review.author._id)) { %>
                             <form

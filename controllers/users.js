@@ -1,4 +1,5 @@
 const User = require('../models/user.js');
+const Listing = require('../models/listing.js');
 
 module.exports.renderSignup = (req, res) => {
     res.render("users/signup.ejs");
@@ -41,5 +42,23 @@ module.exports.logout = (req, res) => {
         }
         req.flash("success", "You have logged out!");
         res.redirect('/listings');
+    });
+};
+
+module.exports.showProfile = async (req, res) => {
+    const { id } = req.params;
+
+    const host = await User.findById(id);
+
+    if (!host) {
+        req.flash("error", "That user could not be found.");
+        return res.redirect("/listings");
+    }
+
+    const hostListings = await Listing.find({ owner: id }).populate("reviews");
+
+    res.render("users/show.ejs", {
+        host,
+        hostListings
     });
 };

@@ -18,6 +18,7 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
       <div class="navbar-nav nav-primary">
         <a class="nav-link" href="/listings">Explore</a>
       </div>
@@ -30,11 +31,12 @@
       >
         <label class="nav-search-segment nav-search-input-wrap">
           <span>Where</span>
+
           <input
             type="search"
             name="q"
             placeholder="Search destinations"
-            value="<%= locals.searchQuery || '' %>"
+            value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
             required
           />
         </label>
@@ -49,28 +51,58 @@
           <small>Add guests</small>
         </span>
 
-        <button class="nav-search-button" type="submit" aria-label="Search stays">
+        <button
+          class="nav-search-button"
+          type="submit"
+          aria-label="Search stays"
+        >
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
       </form>
 
       <div class="navbar-nav nav-actions">
-        <a class="nav-link host-link" href="/listings/new">Host your home</a>
-        <a class="nav-icon-link" href="/listings" aria-label="Explore globally" title="Explore globally">
+
+        <a class="nav-link host-link" href="/listings/new">
+          Host your home
+        </a>
+
+        <a
+          class="nav-icon-link"
+          href="/listings"
+          aria-label="Explore globally"
+          title="Explore globally"
+        >
           <i class="fa-solid fa-globe"></i>
         </a>
 
-        <% if (!locals.currUser) { %>
-          <a class="nav-link fw-semibold" href="/signup">Signup</a>
-          <a class="nav-link fw-semibold" href="/login">Login</a>
-        <% } else { %>
+        <% if (currUser) { %>
+
+          <a class="nav-link fw-semibold" href="/listings/my-bookings">
+            My Trips
+          </a>
+
           <span class="nav-user-pill">
             <i class="fa-solid fa-bars"></i>
             <i class="fa-solid fa-circle-user"></i>
-            <span><%= locals.currUser.username %></span>
+            <span><%= currUser.username %></span>
           </span>
-          <a class="nav-link fw-semibold" href="/logout">Logout</a>
+
+          <a class="nav-link fw-semibold" href="/logout">
+            Logout
+          </a>
+
+        <% } else { %>
+
+          <a class="nav-link fw-semibold" href="/signup">
+            Signup
+          </a>
+
+          <a class="nav-link fw-semibold" href="/login">
+            Login
+          </a>
+
         <% } %>
+
       </div>
     </div>
   </div>

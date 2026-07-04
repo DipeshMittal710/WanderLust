@@ -47,33 +47,144 @@
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label for="category" class="form-label">
-                    Category
-                </label>
+            <div class="row">
+                <div class="mb-3 col-md-8">
+                    <label for="category" class="form-label">
+                        Category
+                    </label>
 
-                <select
-                    name="listing[category]"
-                    id="category"
-                    class="form-select"
-                    required
-                >
-                    <option value="">Select category</option>
-                    <option value="Trending">Trending</option>
-                    <option value="Rooms">Rooms</option>
-                    <option value="Iconic Cities">Iconic Cities</option>
-                    <option value="Mountain">Mountain</option>
-                    <option value="Castles">Castles</option>
-                    <option value="Arctic">Arctic</option>
-                    <option value="Camping">Camping</option>
-                    <option value="Farms">Farms</option>
-                    <option value="Amazing Pools">Amazing Pools</option>
-                    <option value="Domes">Domes</option>
-                    <option value="Boats">Boats</option>
-                </select>
+                    <select
+                        name="listing[category]"
+                        id="category"
+                        class="form-select"
+                        required
+                    >
+                        <option value="">Select category</option>
+                        <option value="Trending">Trending</option>
+                        <option value="Rooms">Rooms</option>
+                        <option value="Iconic Cities">Iconic Cities</option>
+                        <option value="Mountain">Mountain</option>
+                        <option value="Castles">Castles</option>
+                        <option value="Arctic">Arctic</option>
+                        <option value="Camping">Camping</option>
+                        <option value="Farms">Farms</option>
+                        <option value="Amazing Pools">Amazing Pools</option>
+                        <option value="Domes">Domes</option>
+                        <option value="Boats">Boats</option>
+                    </select>
 
-                <div class="invalid-feedback">
-                    Please select a category
+                    <div class="invalid-feedback">
+                        Please select a category
+                    </div>
+                </div>
+
+                <div class="mb-3 col-md-4">
+                    <label for="maxGuests" class="form-label">
+                        Guests allowed
+                    </label>
+
+                    <input
+                        id="maxGuests"
+                        name="listing[maxGuests]"
+                        placeholder="4"
+                        type="number"
+                        min="1"
+                        value="2"
+                        class="form-control"
+                        required
+                    >
+
+                    <div class="invalid-feedback">
+                        Enter how many guests can stay
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Amenities</h2>
+            <p class="text-muted">Select everything this stay offers.</p>
+
+            <div class="amenities-grid">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Wifi" id="amenity-wifi">
+                    <label class="form-check-label" for="amenity-wifi"><i class="fa-solid fa-wifi"></i> Wifi</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Free parking" id="amenity-parking">
+                    <label class="form-check-label" for="amenity-parking"><i class="fa-solid fa-car"></i> Free parking</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Kitchen" id="amenity-kitchen">
+                    <label class="form-check-label" for="amenity-kitchen"><i class="fa-solid fa-kitchen-set"></i> Kitchen</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Air conditioning" id="amenity-ac">
+                    <label class="form-check-label" for="amenity-ac"><i class="fa-solid fa-snowflake"></i> Air conditioning</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Self check-in" id="amenity-checkin">
+                    <label class="form-check-label" for="amenity-checkin"><i class="fa-solid fa-key"></i> Self check-in</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Safety essentials" id="amenity-safety">
+                    <label class="form-check-label" for="amenity-safety"><i class="fa-solid fa-shield-heart"></i> Safety essentials</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Swimming pool" id="amenity-pool">
+                    <label class="form-check-label" for="amenity-pool"><i class="fa-solid fa-person-swimming"></i> Swimming pool</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="TV" id="amenity-tv">
+                    <label class="form-check-label" for="amenity-tv"><i class="fa-solid fa-tv"></i> TV</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Washer" id="amenity-washer">
+                    <label class="form-check-label" for="amenity-washer"><i class="fa-solid fa-shirt"></i> Washer</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Workspace" id="amenity-workspace">
+                    <label class="form-check-label" for="amenity-workspace"><i class="fa-solid fa-laptop"></i> Workspace</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Pet friendly" id="amenity-pets">
+                    <label class="form-check-label" for="amenity-pets"><i class="fa-solid fa-paw"></i> Pet friendly</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Breakfast included" id="amenity-breakfast">
+                    <label class="form-check-label" for="amenity-breakfast"><i class="fa-solid fa-mug-saucer"></i> Breakfast included</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>House rules</h2>
+            <p class="text-muted">Let guests know what to expect before they book.</p>
+
+            <div class="amenities-grid">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[houseRules][]" value="No smoking" id="rule-smoking">
+                    <label class="form-check-label" for="rule-smoking"><i class="fa-solid fa-smoking-ban"></i> No smoking</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[houseRules][]" value="No pets" id="rule-pets">
+                    <label class="form-check-label" for="rule-pets"><i class="fa-solid fa-paw"></i> No pets</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[houseRules][]" value="No parties or events" id="rule-parties">
+                    <label class="form-check-label" for="rule-parties"><i class="fa-solid fa-champagne-glasses"></i> No parties or events</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[houseRules][]" value="Quiet hours after 10 PM" id="rule-quiet">
+                    <label class="form-check-label" for="rule-quiet"><i class="fa-solid fa-volume-xmark"></i> Quiet hours after 10 PM</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[houseRules][]" value="Suitable for children" id="rule-children">
+                    <label class="form-check-label" for="rule-children"><i class="fa-solid fa-child"></i> Suitable for children</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[houseRules][]" value="Not suitable for infants" id="rule-infants">
+                    <label class="form-check-label" for="rule-infants"><i class="fa-solid fa-ban"></i> Not suitable for infants</label>
                 </div>
             </div>
         </div>
@@ -83,7 +194,7 @@
 
             <div class="mb-3">
                 <label for="image" class="form-label">
-                    Upload listing image
+                    Upload listing photos
                 </label>
 
                 <input
@@ -91,8 +202,10 @@
                     name="listing[image]"
                     type="file"
                     class="form-control"
+                    multiple
                     required
                 >
+                <div class="form-text">You can select up to 6 photos at once.</div>
             </div>
 
             <div class="row">

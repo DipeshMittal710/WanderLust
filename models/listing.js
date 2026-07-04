@@ -9,12 +9,25 @@ const listingSchema = new Schema({
     },
     description: String,
     image: {
-    url: String,
-    filename: String
-},
+        url: String,
+        filename: String
+    },
+    images: [
+        {
+            url: String,
+            filename: String
+        }
+    ],
     price: Number,
     location: String,
     country: String,
+    maxGuests: {
+        type: Number,
+        min: 1,
+        default: 2
+    },
+    amenities: [String],
+    houseRules: [String],
     reviews: [
         {
             type: Schema.Types.ObjectId,
@@ -26,38 +39,38 @@ const listingSchema = new Schema({
         ref: 'User',
     },
     geometry: {
-    type: {
-        type: String,
-        enum: ["Point"],
-        required: false,
+        type: {
+            type: String,
+            enum: ["Point"],
+            required: false,
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
+        },
     },
-    coordinates: {
-        type: [Number],
-        required: true,
-    },
-},
     category: {
-    type: String,
-    enum: [
-        "Trending",
-        "Rooms",
-        "Iconic Cities",
-        "Mountain",
-        "Castles",
-        "Arctic",
-        "Camping",
-        "Farms",
-        "Amazing Pools",
-        "Domes",
-        "Boats"
-    ],
-    default: "Trending"
-},
-    });
+        type: String,
+        enum: [
+            "Trending",
+            "Rooms",
+            "Iconic Cities",
+            "Mountain",
+            "Castles",
+            "Arctic",
+            "Camping",
+            "Farms",
+            "Amazing Pools",
+            "Domes",
+            "Boats"
+        ],
+        default: "Trending"
+    },
+});
 
-listingSchema.post('findOneAndDelete', async listing => { 
-    if(listing){   
-        await Review.deleteMany({_id: { $in: listing.reviews }})
+listingSchema.post('findOneAndDelete', async listing => {
+    if (listing) {
+        await Review.deleteMany({ _id: { $in: listing.reviews } })
     }
 });
 

@@ -29,4 +29,7 @@ router
 router.get('/logout', 
     userController.logout);
 
+router.get('/users/:id',
+    wrapAsync(userController.showProfile));
+
 module.exports = router;

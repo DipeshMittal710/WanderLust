@@ -1,0 +1,124 @@
+<% layout('layouts/boilerplate') %>
+
+<%
+  const memberSince = host.createdAt
+    ? new Date(host.createdAt).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
+    : null;
+
+  const totalReviews = hostListings.reduce(
+    (sum, l) => sum + (l.reviews ? l.reviews.length : 0),
+    0
+  );
+  const ratingSum = hostListings.reduce((sum, l) => {
+    const listingSum = (l.reviews || []).reduce((s, r) => s + (r.rating || 0), 0);
+    return sum + listingSum;
+  }, 0);
+  const hostAverageRating = totalReviews ? (ratingSum / totalReviews).toFixed(2) : null;
+%>
+
+<section class="host-summary">
+    <div>
+        <h2><%= host.username %></h2>
+        <p>
+            <% if (memberSince) { %>Member since <%= memberSince %><% } else { %>WanderLust host<% } %>
+            <% if (hostAverageRating) { %>
+                &middot; <i class="fa-solid fa-star"></i> <%= hostAverageRating %>
+                (<%= totalReviews %> review<%= totalReviews === 1 ? '' : 's' %>)
+            <% } %>
+        </p>
+    </div>
+    <div class="host-avatar">
+        <i class="fa-solid fa-circle-user"></i>
+    </div>
+</section>
+
+<section class="description-block">
+    <h2>About <%= host.username %></h2>
+    <% if (host.bio && host.bio.trim()) { %>
+        <p><%= host.bio %></p>
+    <% } else { %>
+        <p class="text-muted">This host hasn't written a bio yet.</p>
+    <% } %>
+</section>
+
+<section class="amenities-block">
+    <h2><%= host.username %>'s stays</h2>
+
+    <% if (hostListings.length === 0) { %>
+        <p class="text-muted">This host doesn't have any listings yet.</p>
+    <% } else { %>
+        <section class="listing-grid" aria-label="Stays hosted by <%= host.username %>">
+            <% hostListings.forEach((listing, index) => { %>
+                <%
+                  const reviews = listing.reviews || [];
+                  const reviewCount = reviews.length;
+                  const ratingTotal = reviews.reduce((sum, review) => sum + (review.rating || 0), 0);
+                  const averageRating = reviewCount ? (ratingTotal / reviewCount).toFixed(2) : "New";
+                  const guests = listing.maxGuests || 2;
+                  const beds = Math.max(1, Math.ceil(guests / 2));
+                  const locationLine = [listing.location, listing.country].filter(Boolean).join(", ");
+                  const cardImageList = (listing.images && listing.images.length)
+                    ? listing.images
+                    : (listing.image && listing.image.url ? [listing.image] : []);
+                  const imageUrl = cardImageList[0]
+                    ? cardImageList[0].url
+                    : "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=70";
+                  const isGuestFavorite = reviewCount >= 2 || index % 4 === 0;
+                %>
+
+                <article class="stay-card">
+                    <a href="/listings/<%= listing._id %>" class="listing-link">
+                        <div class="stay-card-image">
+                            <img src="<%= imageUrl %>" alt="<%= listing.title %>">
+                            <% if (isGuestFavorite) { %>
+                                <span class="guest-favorite-badge">Guest favorite</span>
+                            <% } %>
+                        </div>
+
+                        <div class="stay-card-body">
+                            <div class="stay-card-heading">
+                                <div>
+                                    <h3><%= listing.title %></h3>
+                                    <p><%= locationLine %></p>
+                                </div>
+                                <span class="rating-pill">
+                                    <i class="fa-solid fa-star"></i>
+                                    <%= averageRating %>
+                                </span>
+                            </div>
+
+                            <div class="stay-meta">
+                                <span><%= guests %> guest<%= guests === 1 ? '' : 's' %></span>
+                                <span><%= beds %> bedroom<%= beds === 1 ? '' : 's' %></span>
+                                <% if (listing.category) { %>
+                                    <span><%= listing.category %></span>
+                                <% } %>
+                            </div>
+
+                            <div class="stay-card-footer">
+                                <p>
+                                    <span class="base-price">
+                                        <b>&#8377;<%= (listing.price || 0).toLocaleString('en-IN') %></b> night
+                                    </span>
+                                    <span class="tax-price">
+                                        <b>&#8377;<%= Math.round((listing.price || 0) * 1.18).toLocaleString('en-IN') %></b> night
+                                    </span>
+                                </p>
+                                <small><%= reviewCount %> reviews</small>
+                            </div>
+                        </div>
+                    </a>
+
+                    <button
+                        class="save-stay-btn"
+                        type="button"
+                        data-listing-id="<%= listing._id %>"
+                        aria-label="Save <%= listing.title %>"
+                    >
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                </article>
+            <% }) %>
+        </section>
+    <% } %>
+</section>

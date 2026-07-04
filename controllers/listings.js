@@ -2,8 +2,7 @@ const Listing = require('../models/listing');
 const axios = require("axios");
 
 module.exports.index = async (req, res) => {
-    const allListings = await Listing.find({}).populate("reviews");
-
+    const allListings = await Listing.find({}).populate("reviews").populate("owner");
 
     res.render('listings/index.ejs', {
         listings: allListings,
@@ -16,7 +15,7 @@ module.exports.filterByCategory = async (req, res) => {
 
     const listings = await Listing.find({
         category: category
-    }).populate("reviews");
+    }).populate("reviews").populate("owner");
 
     res.render("listings/index.ejs", {
         listings,
@@ -52,13 +51,16 @@ module.exports.showListing = async (req, res) => {
 };
 
 module.exports.createListing = async (req, res) => {
-    if (!req.file) {
-        req.flash("error", "Please upload a listing image.");
+    // upload.array() puts files on req.files (plural), not req.file
+    if (!req.files || req.files.length === 0) {
+        req.flash("error", "Please upload at least one listing photo.");
         return res.redirect("/listings/new");
     }
 
-    let url = req.file.path;
-    let filename = req.file.filename;
+    const images = req.files.map(file => ({
+        url: file.path,
+        filename: file.filename
+    }));
 
     const geoResponse = await axios.get(
         "https://api.geoapify.com/v1/geocode/search",
@@ -78,6 +80,19 @@ module.exports.createListing = async (req, res) => {
     const coordinates =
         geoResponse.data.features[0].geometry.coordinates;
 
+    // Checkbox groups arrive as a single string when only one box is
+    // checked, and as an array when multiple are checked (or none at
+    // all when none are checked) - normalize to an array either way.
+    let amenities = req.body.listing.amenities || [];
+    if (!Array.isArray(amenities)) {
+        amenities = [amenities];
+    }
+
+    let houseRules = req.body.listing.houseRules || [];
+    if (!Array.isArray(houseRules)) {
+        houseRules = [houseRules];
+    }
+
     const newListing = new Listing(req.body.listing);
 
     newListing.geometry = {
@@ -85,11 +100,11 @@ module.exports.createListing = async (req, res) => {
         coordinates: coordinates
     };
 
-    newListing.image = {
-        url,
-        filename
-    };
-
+    newListing.images = images;
+    newListing.image = images[0]; // keep the legacy single-image field filled in too
+    newListing.amenities = amenities;
+    newListing.houseRules = houseRules;
+    newListing.maxGuests = Number(req.body.listing.maxGuests) || 2;
     newListing.owner = req.user._id;
 
     await newListing.save();
@@ -109,12 +124,14 @@ module.exports.renderEditForm = async (req, res) => {
         return res.redirect('/listings');
     }
 
-    let originalImageUrl = listing.image.url;
+    let originalImageUrl = listing.image && listing.image.url ? listing.image.url : "";
 
-    originalImageUrl = originalImageUrl.replace(
-        '/upload',
-        '/upload/w_300'
-    );
+    if (originalImageUrl) {
+        originalImageUrl = originalImageUrl.replace(
+            '/upload',
+            '/upload/w_300'
+        );
+    }
 
     res.render("listings/edit.ejs", {
         listing,
@@ -126,24 +143,43 @@ module.exports.updateListing = async (req, res) => {
 
     let { id } = req.params;
 
-    let listing = await Listing.findByIdAndUpdate(
-        id,
-        { ...req.body.listing },
-        { new: true }
-    );
+    let listing = await Listing.findById(id);
 
-    if (typeof req.file !== "undefined") {
-
-        let url = req.file.path;
-        let filename = req.file.filename;
-
-        listing.image = {
-            url,
-            filename
-        };
-
-        await listing.save();
+    if (!listing) {
+        req.flash('error', 'Cannot find that listing!');
+        return res.redirect('/listings');
     }
+
+    let amenities = req.body.listing.amenities || [];
+    if (!Array.isArray(amenities)) {
+        amenities = [amenities];
+    }
+
+    let houseRules = req.body.listing.houseRules || [];
+    if (!Array.isArray(houseRules)) {
+        houseRules = [houseRules];
+    }
+
+    Object.assign(listing, req.body.listing);
+    listing.amenities = amenities;
+    listing.houseRules = houseRules;
+    listing.maxGuests = Number(req.body.listing.maxGuests) || listing.maxGuests || 2;
+
+    // Uploading new photos on edit replaces the whole set, rather than
+    // appending to it - keeps the mental model simple (same as the
+    // original single-photo edit behavior) instead of needing per-photo
+    // add/remove controls.
+    if (req.files && req.files.length > 0) {
+        const images = req.files.map(file => ({
+            url: file.path,
+            filename: file.filename
+        }));
+
+        listing.images = images;
+        listing.image = images[0];
+    }
+
+    await listing.save();
 
     req.flash('success', 'Successfully updated the listing!');
     res.redirect(`/listings/${id}`);
@@ -177,7 +213,7 @@ module.exports.searchListings = async (req, res) => {
             { country: { $regex: q, $options: "i" } },
             { category: { $regex: q, $options: "i" } }
         ]
-    }).populate("reviews");
+    }).populate("reviews").populate("owner");
 
     res.render("listings/index.ejs", {
         listings,

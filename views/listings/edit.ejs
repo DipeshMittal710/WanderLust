@@ -14,6 +14,10 @@
         "Domes",
         "Boats"
     ];
+
+    const currentAmenities = listing.amenities || [];
+    const currentRules = listing.houseRules || [];
+    const hasChecked = (list, value) => list.includes(value) ? "checked" : "";
 %>
 
 <section class="host-form-page">
@@ -58,25 +62,129 @@
                 <div class="invalid-feedback">Please enter a short description</div>
             </div>
 
-            <div class="mb-3">
-                <label for="category" class="form-label">Category</label>
-                <select
-                    name="listing[category]"
-                    id="category"
-                    class="form-select"
-                    required
-                >
-                    <option value="">Select category</option>
-                    <% categories.forEach(category => { %>
-                        <option
-                            value="<%= category %>"
-                            <%= listing.category === category ? "selected" : "" %>
-                        >
-                            <%= category %>
-                        </option>
-                    <% }) %>
-                </select>
-                <div class="invalid-feedback">Please select a category</div>
+            <div class="row">
+                <div class="mb-3 col-md-8">
+                    <label for="category" class="form-label">Category</label>
+                    <select
+                        name="listing[category]"
+                        id="category"
+                        class="form-select"
+                        required
+                    >
+                        <option value="">Select category</option>
+                        <% categories.forEach(category => { %>
+                            <option
+                                value="<%= category %>"
+                                <%= listing.category === category ? "selected" : "" %>
+                            >
+                                <%= category %>
+                            </option>
+                        <% }) %>
+                    </select>
+                    <div class="invalid-feedback">Please select a category</div>
+                </div>
+
+                <div class="mb-3 col-md-4">
+                    <label for="maxGuests" class="form-label">Guests allowed</label>
+                    <input
+                        id="maxGuests"
+                        name="listing[maxGuests]"
+                        value="<%= listing.maxGuests || 2 %>"
+                        type="number"
+                        min="1"
+                        class="form-control"
+                        required
+                    >
+                    <div class="invalid-feedback">Enter how many guests can stay</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Amenities</h2>
+            <p class="text-muted">Select everything this stay offers.</p>
+
+            <div class="amenities-grid">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Wifi" id="amenity-wifi" <%= hasChecked(currentAmenities, "Wifi") %>>
+                    <label class="form-check-label" for="amenity-wifi"><i class="fa-solid fa-wifi"></i> Wifi</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Free parking" id="amenity-parking" <%= hasChecked(currentAmenities, "Free parking") %>>
+                    <label class="form-check-label" for="amenity-parking"><i class="fa-solid fa-car"></i> Free parking</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Kitchen" id="amenity-kitchen" <%= hasChecked(currentAmenities, "Kitchen") %>>
+                    <label class="form-check-label" for="amenity-kitchen"><i class="fa-solid fa-kitchen-set"></i> Kitchen</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Air conditioning" id="amenity-ac" <%= hasChecked(currentAmenities, "Air conditioning") %>>
+                    <label class="form-check-label" for="amenity-ac"><i class="fa-solid fa-snowflake"></i> Air conditioning</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Self check-in" id="amenity-checkin" <%= hasChecked(currentAmenities, "Self check-in") %>>
+                    <label class="form-check-label" for="amenity-checkin"><i class="fa-solid fa-key"></i> Self check-in</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Safety essentials" id="amenity-safety" <%= hasChecked(currentAmenities, "Safety essentials") %>>
+                    <label class="form-check-label" for="amenity-safety"><i class="fa-solid fa-shield-heart"></i> Safety essentials</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Swimming pool" id="amenity-pool" <%= hasChecked(currentAmenities, "Swimming pool") %>>
+                    <label class="form-check-label" for="amenity-pool"><i class="fa-solid fa-person-swimming"></i> Swimming pool</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="TV" id="amenity-tv" <%= hasChecked(currentAmenities, "TV") %>>
+                    <label class="form-check-label" for="amenity-tv"><i class="fa-solid fa-tv"></i> TV</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Washer" id="amenity-washer" <%= hasChecked(currentAmenities, "Washer") %>>
+                    <label class="form-check-label" for="amenity-washer"><i class="fa-solid fa-shirt"></i> Washer</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Workspace" id="amenity-workspace" <%= hasChecked(currentAmenities, "Workspace") %>>
+                    <label class="form-check-label" for="amenity-workspace"><i class="fa-solid fa-laptop"></i> Workspace</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Pet friendly" id="amenity-pets" <%= hasChecked(currentAmenities, "Pet friendly") %>>
+                    <label class="form-check-label" for="amenity-pets"><i class="fa-solid fa-paw"></i> Pet friendly</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Breakfast included" id="amenity-breakfast" <%= hasChecked(currentAmenities, "Breakfast included") %>>
+                    <label class="form-check-label" for="amenity-breakfast"><i class="fa-solid fa-mug-saucer"></i> Breakfast included</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>House rules</h2>
+            <p class="text-muted">Let guests know what to expect before they book.</p>
+
+            <div class="amenities-grid">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[houseRules][]" value="No smoking" id="rule-smoking" <%= hasChecked(currentRules, "No smoking") %>>
+                    <label class="form-check-label" for="rule-smoking"><i class="fa-solid fa-smoking-ban"></i> No smoking</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[houseRules][]" value="No pets" id="rule-pets" <%= hasChecked(currentRules, "No pets") %>>
+                    <label class="form-check-label" for="rule-pets"><i class="fa-solid fa-paw"></i> No pets</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[houseRules][]" value="No parties or events" id="rule-parties" <%= hasChecked(currentRules, "No parties or events") %>>
+                    <label class="form-check-label" for="rule-parties"><i class="fa-solid fa-champagne-glasses"></i> No parties or events</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[houseRules][]" value="Quiet hours after 10 PM" id="rule-quiet" <%= hasChecked(currentRules, "Quiet hours after 10 PM") %>>
+                    <label class="form-check-label" for="rule-quiet"><i class="fa-solid fa-volume-xmark"></i> Quiet hours after 10 PM</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[houseRules][]" value="Suitable for children" id="rule-children" <%= hasChecked(currentRules, "Suitable for children") %>>
+                    <label class="form-check-label" for="rule-children"><i class="fa-solid fa-child"></i> Suitable for children</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="listing[houseRules][]" value="Not suitable for infants" id="rule-infants" <%= hasChecked(currentRules, "Not suitable for infants") %>>
+                    <label class="form-check-label" for="rule-infants"><i class="fa-solid fa-ban"></i> Not suitable for infants</label>
+                </div>
             </div>
         </div>
 
@@ -85,17 +193,23 @@
 
             <div class="current-photo-preview">
                 <span>Current photo</span>
-                <img src="<%= originalImageUrl %>" alt="<%= listing.title %>">
+                <% if (originalImageUrl) { %>
+                    <img src="<%= originalImageUrl %>" alt="<%= listing.title %>">
+                <% } else { %>
+                    <p class="text-muted">No photo on file yet.</p>
+                <% } %>
             </div>
 
             <div class="mb-3">
-                <label for="image" class="form-label">Upload new image</label>
+                <label for="image" class="form-label">Upload new photos</label>
                 <input
                     id="image"
                     name="listing[image]"
                     type="file"
                     class="form-control"
+                    multiple
                 >
+                <div class="form-text">Uploading here replaces all current photos. Leave empty to keep the existing ones.</div>
             </div>
 
             <div class="row">

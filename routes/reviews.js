@@ -4,8 +4,7 @@ const wrapAsync = require('../utils/wrapAsync.js');
 const ExpressError = require('../utils/ExpressError.js');
 const Review = require('../models/reviews.js');
 const Listing = require('../models/listing.js');
-const {validateReview, isLoggedIn, isReviewAuthor} = require('../middleware.js');
-const { isRef } = require('joi');
+const {validateReview, validateReply, isLoggedIn, isReviewAuthor} = require('../middleware.js');
 
 const reviewController = require('../controllers/reviews.js');
 
@@ -21,6 +20,13 @@ router.delete("/:reviewId",
     isLoggedIn, 
     isReviewAuthor, 
     wrapAsync(reviewController.destroyReview)
+);
+
+// Host reply route
+router.post("/:reviewId/reply",
+    isLoggedIn,
+    validateReply,
+    wrapAsync(reviewController.replyToReview)
 );
 
 module.exports = router;
