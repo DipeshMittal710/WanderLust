@@ -940,6 +940,27 @@ a {
     background-color: var(--warm);
 }
 
+/* Same look as .host-form-intro, but for standalone banners
+   (Dashboard, My Trips, Wishlist) that aren't a sidebar next to a
+   second grid column - position: sticky only behaves correctly
+   inside .host-form-page's two-column grid. */
+.page-intro {
+    padding: 1.5rem;
+    border: 1px solid #f0e3d7;
+    border-radius: 8px;
+    background-color: var(--warm);
+    margin: 2rem 0 1.5rem;
+}
+
+.page-intro h1 {
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.page-intro p:last-child {
+    color: var(--muted);
+}
+
 .host-form-intro h1 {
     font-size: 2rem;
     font-weight: 800;
@@ -1221,4 +1242,287 @@ a {
         width: 100%;
         height: 180px;
     }
+}
+
+/* Advanced filters */
+.advanced-filters {
+    margin: 1rem 0 1.5rem;
+}
+
+.advanced-filters summary {
+    cursor: pointer;
+    font-weight: 700;
+    padding: 0.6rem 0;
+    list-style: none;
+}
+
+.advanced-filters summary::-webkit-details-marker {
+    display: none;
+}
+
+.advanced-filters summary i {
+    margin-right: 0.4rem;
+    color: var(--teal);
+}
+
+.filter-form {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-top: 0.5rem;
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.filter-row label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.filter-row input,
+.filter-row select {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.9rem;
+}
+
+.filter-amenities {
+    margin-bottom: 1rem;
+}
+
+.filter-amenities-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+}
+
+.filter-amenities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.filter-chip-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.filter-chip-check input {
+    margin: 0;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 0.6rem;
+}
+
+/* Availability + host blocking */
+.availability-card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.availability-card h3 {
+    font-size: 1rem;
+    margin: 0 0 0.5rem;
+}
+
+.availability-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+}
+
+.inline-unblock-form {
+    display: inline;
+}
+
+.link-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--brand-dark);
+    font-size: 0.8rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.block-dates-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 0.6rem;
+}
+
+.block-dates-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.block-dates-form input {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.45rem 0.6rem;
+}
+
+.booking-error {
+    background: #fdecea;
+    color: #b3261e;
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+    margin: 0.75rem 0;
+}
+
+/* Host dashboard */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-stat {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.dashboard-stat-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+
+.dashboard-stat-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.dashboard-section {
+    margin-bottom: 2rem;
+}
+
+.dashboard-section h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+}
+
+.dashboard-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    text-align: left;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+.dashboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.status-pill {
+    display: inline-block;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.status-pending {
+    background: var(--warm);
+    color: var(--brand-dark);
+}
+
+.status-confirmed {
+    background: #e6f4ea;
+    color: #1e7e34;
+}
+
+.status-completed {
+    background: var(--soft);
+    color: var(--muted);
+}
+
+.status-cancelled {
+    background: #fdecea;
+    color: #b3261e;
+}
+
+.trip-status-pending {
+    background: var(--warm);
+    color: var(--brand-dark);
+}
+
+.trip-status-cancelled {
+    background: #fdecea;
+    color: #b3261e;
+}
+
+.user-menu .dropdown-menu {
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    padding: 0.4rem;
+    margin-top: 0.5rem;
+}
+
+.user-menu .dropdown-item {
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+.user-menu .dropdown-item:hover {
+    background-color: var(--soft);
+}
+
+.user-menu .nav-user-pill {
+    cursor: pointer;
 }

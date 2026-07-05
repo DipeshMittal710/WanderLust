@@ -1,0 +1,117 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="page-intro">
+    <p class="eyebrow">Host dashboard</p>
+    <h1>Your hosting, at a glance.</h1>
+    <p>Listings, bookings, and earnings across everything you host.</p>
+</section>
+
+<section class="dashboard-stats">
+    <div class="dashboard-stat">
+        <span class="dashboard-stat-value"><%= totalListings %></span>
+        <span class="dashboard-stat-label">Total listings</span>
+    </div>
+    <div class="dashboard-stat">
+        <span class="dashboard-stat-value"><%= totalBookings %></span>
+        <span class="dashboard-stat-label">Total bookings</span>
+    </div>
+    <div class="dashboard-stat">
+        <span class="dashboard-stat-value">&#8377;<%= earnings.toLocaleString('en-IN') %></span>
+        <span class="dashboard-stat-label">Earnings (confirmed)</span>
+    </div>
+    <div class="dashboard-stat">
+        <span class="dashboard-stat-value"><%= pendingBookings.length %></span>
+        <span class="dashboard-stat-label">Pending requests</span>
+    </div>
+    <div class="dashboard-stat">
+        <span class="dashboard-stat-value"><%= averageRating || "New" %></span>
+        <span class="dashboard-stat-label"><%= totalReviews %> review<%= totalReviews === 1 ? '' : 's' %></span>
+    </div>
+</section>
+
+<section class="dashboard-section">
+    <h2>Needs your response</h2>
+
+    <% if (pendingBookings.length === 0) { %>
+        <p class="text-muted">No pending booking requests right now.</p>
+    <% } else { %>
+        <div class="dashboard-table-wrap">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Listing</th>
+                        <th>Guest</th>
+                        <th>Dates</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% pendingBookings.forEach(booking => { %>
+                        <%
+                          const listing = booking.listing;
+                          const checkInStr = new Date(booking.checkIn).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                          const checkOutStr = new Date(booking.checkOut).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                        %>
+                        <tr>
+                            <td><%= listing ? listing.title : "Listing removed" %></td>
+                            <td><%= booking.user ? booking.user.username : "Unknown" %></td>
+                            <td><%= checkInStr %> &rarr; <%= checkOutStr %></td>
+                            <td>&#8377;<%= booking.totalPrice.toLocaleString('en-IN') %></td>
+                            <td class="dashboard-actions">
+                                <% if (listing) { %>
+                                    <form method="POST" action="/listings/<%= listing._id %>/bookings/<%= booking._id %>/approve">
+                                        <button type="submit" class="btn btn-sm btn-dark">Approve</button>
+                                    </form>
+                                    <form method="POST" action="/listings/<%= listing._id %>/bookings/<%= booking._id %>/reject">
+                                        <button type="submit" class="btn btn-sm btn-outline-dark">Decline</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+</section>
+
+<section class="dashboard-section">
+    <h2>All bookings</h2>
+
+    <% if (allBookings.length === 0) { %>
+        <p class="text-muted">No bookings yet across any of your listings.</p>
+    <% } else { %>
+        <div class="dashboard-table-wrap">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Listing</th>
+                        <th>Guest</th>
+                        <th>Dates</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% allBookings.forEach(booking => { %>
+                        <%
+                          const listing = booking.listing;
+                          const isPastCheckout = new Date(booking.checkOut) < new Date();
+                          const effectiveStatus = (booking.status === "Confirmed" && isPastCheckout) ? "Completed" : booking.status;
+                          const checkInStr = new Date(booking.checkIn).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                          const checkOutStr = new Date(booking.checkOut).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                        %>
+                        <tr>
+                            <td><%= listing ? listing.title : "Listing removed" %></td>
+                            <td><%= booking.user ? booking.user.username : "Unknown" %></td>
+                            <td><%= checkInStr %> &rarr; <%= checkOutStr %></td>
+                            <td>&#8377;<%= booking.totalPrice.toLocaleString('en-IN') %></td>
+                            <td><span class="status-pill status-<%= effectiveStatus.toLowerCase() %>"><%= effectiveStatus %></span></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+</section>

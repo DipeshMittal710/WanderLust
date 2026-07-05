@@ -1,0 +1,88 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="page-intro">
+    <p class="eyebrow">Saved</p>
+    <h1>Your wishlist.</h1>
+    <p>Stays you've saved to look at again later.</p>
+</section>
+
+<% if (!listings || listings.length === 0) { %>
+  <section class="empty-state">
+    <i class="fa-regular fa-heart"></i>
+    <h3>Nothing saved yet</h3>
+    <p>Tap the heart icon on any stay to add it here.</p>
+    <a href="/listings" class="btn btn-dark">Browse stays</a>
+  </section>
+<% } else { %>
+  <section class="listing-grid" aria-label="Saved stays">
+    <% listings.forEach((listing, index) => { %>
+      <%
+        const reviews = listing.reviews || [];
+        const reviewCount = reviews.length;
+        const ratingTotal = reviews.reduce((sum, review) => sum + (review.rating || 0), 0);
+        const averageRating = reviewCount ? (ratingTotal / reviewCount).toFixed(2) : "New";
+        const guests = listing.maxGuests || 2;
+        const beds = Math.max(1, Math.ceil(guests / 2));
+        const locationLine = [listing.location, listing.country].filter(Boolean).join(", ");
+        const cardImageList = (listing.images && listing.images.length)
+          ? listing.images
+          : (listing.image && listing.image.url ? [listing.image] : []);
+        const imageUrl = cardImageList[0]
+          ? cardImageList[0].url
+          : "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=70";
+      %>
+
+      <article class="stay-card">
+        <a href="/listings/<%= listing._id %>" class="listing-link">
+          <div class="stay-card-image">
+            <img src="<%= imageUrl %>" alt="<%= listing.title %>">
+          </div>
+
+          <div class="stay-card-body">
+            <div class="stay-card-heading">
+              <div>
+                <h3><%= listing.title %></h3>
+                <p><%= locationLine %></p>
+                <p class="hosted-by text-muted">Hosted by <%= (listing.owner && listing.owner.username) ? listing.owner.username : "WanderLust host" %></p>
+              </div>
+              <span class="rating-pill">
+                <i class="fa-solid fa-star"></i>
+                <%= averageRating %>
+              </span>
+            </div>
+
+            <div class="stay-meta">
+              <span><%= guests %> guest<%= guests === 1 ? '' : 's' %></span>
+              <span><%= beds %> bedroom<%= beds === 1 ? '' : 's' %></span>
+              <% if (listing.category) { %>
+                <span><%= listing.category %></span>
+              <% } %>
+            </div>
+
+            <div class="stay-card-footer">
+              <p>
+                <span class="base-price">
+                  <b>&#8377;<%= listing.price.toLocaleString('en-IN') %></b> night
+                </span>
+                <span class="tax-price">
+                  <b>&#8377;<%= Math.round(listing.price * 1.30).toLocaleString('en-IN') %></b> night
+                </span>
+              </p>
+              <small><%= reviewCount %> reviews</small>
+            </div>
+          </div>
+        </a>
+
+        <button
+          class="save-stay-btn is-saved"
+          type="button"
+          data-listing-id="<%= listing._id %>"
+          data-remove-on-unsave="true"
+          aria-label="Remove <%= listing.title %> from wishlist"
+        >
+          <i class="fa-solid fa-heart"></i>
+        </button>
+      </article>
+    <% }) %>
+  </section>
+<% } %>

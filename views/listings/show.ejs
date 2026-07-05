@@ -39,6 +39,18 @@
     };
     const amenities = ((listing.amenities && listing.amenities.length) ? listing.amenities : [])
         .map(name => ({ icon: amenityIcons[name] || "fa-solid fa-circle-check", label: name }));
+
+    const isOwnerOfListing = !!(locals.currUser && listing.owner && locals.currUser._id.equals(listing.owner._id));
+
+    const fmtDate = (d) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    const bookedRangeList = locals.bookedRanges || [];
+    const blockedDateList = locals.blockedDates || [];
+
+    const unavailableRanges = [
+        ...bookedRangeList.map(r => ({ start: r.start, end: r.end })),
+        ...blockedDateList.map(b => ({ start: b.startDate, end: b.endDate }))
+    ];
 %>
 
 <section class="listing-detail-heading">
@@ -58,11 +70,11 @@
         </button>
         <button
             type="button"
-            class="soft-action-btn save-stay-btn"
+            class="soft-action-btn save-stay-btn <%= isSaved ? 'is-saved' : '' %>"
             data-listing-id="<%= listing._id %>"
             aria-label="Save <%= listing.title %>"
         >
-            <i class="fa-regular fa-heart"></i>
+            <i class="<%= isSaved ? 'fa-solid' : 'fa-regular' %> fa-heart"></i>
             Save
         </button>
     </div>
@@ -358,6 +370,7 @@
                     action="/listings/<%= listing._id %>/book"
                     method="POST"
                     data-nightly-price="<%= nightlyPrice %>"
+                    data-unavailable-ranges='<%- JSON.stringify(unavailableRanges) %>'
                 >
                     <div class="booking-fields">
                         <label>
@@ -428,6 +441,50 @@
                 </div>
             <% } %>
         </div>
+
+        <% if (unavailableRanges.length > 0) { %>
+            <div class="availability-card">
+                <h3><i class="fa-regular fa-calendar-xmark"></i> Unavailable dates</h3>
+                <ul>
+                    <% bookedRangeList.forEach(r => { %>
+                        <li><%= fmtDate(r.start) %> &rarr; <%= fmtDate(r.end) %> <span class="text-muted">(booked)</span></li>
+                    <% }) %>
+                    <% blockedDateList.forEach(b => { %>
+                        <li>
+                            <%= fmtDate(b.startDate) %> &rarr; <%= fmtDate(b.endDate) %>
+                            <span class="text-muted">(blocked<%= b.reason ? ": " + b.reason : "" %>)</span>
+                            <% if (isOwnerOfListing) { %>
+                                <form method="POST" action="/listings/<%= listing._id %>/block/<%= b._id %>?_method=DELETE" class="inline-unblock-form">
+                                    <button type="submit" class="link-btn">Remove</button>
+                                </form>
+                            <% } %>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
+        <% } %>
+
+        <% if (isOwnerOfListing) { %>
+            <div class="availability-card">
+                <h3><i class="fa-solid fa-ban"></i> Block dates</h3>
+                <p class="text-muted">Keep dates open for maintenance or personal use.</p>
+                <form method="POST" action="/listings/<%= listing._id %>/block" class="block-dates-form">
+                    <label>
+                        <span>From</span>
+                        <input type="date" name="startDate" required>
+                    </label>
+                    <label>
+                        <span>To</span>
+                        <input type="date" name="endDate" required>
+                    </label>
+                    <label>
+                        <span>Reason (optional)</span>
+                        <input type="text" name="reason" placeholder="e.g. Maintenance">
+                    </label>
+                    <button type="submit" class="btn btn-outline-dark">Block these dates</button>
+                </form>
+            </div>
+        <% } %>
     </aside>
 </div>
 

@@ -55,19 +55,7 @@
         return;
     }
 
-    let savedStays = [];
-
-    try {
-        savedStays = JSON.parse(localStorage.getItem("savedStays") || "[]");
-    } catch (error) {
-        savedStays = [];
-    }
-
-    const savedSet = new Set(savedStays);
-
-    const renderButton = (button) => {
-        const listingId = button.dataset.listingId;
-        const isSaved = savedSet.has(listingId);
+    const renderButton = (button, isSaved) => {
         const icon = button.querySelector("i");
 
         button.classList.toggle("is-saved", isSaved);
@@ -80,22 +68,42 @@
     };
 
     buttons.forEach((button) => {
-        renderButton(button);
-
-        button.addEventListener("click", (event) => {
+        button.addEventListener("click", async (event) => {
             event.preventDefault();
             event.stopPropagation();
 
             const listingId = button.dataset.listingId;
 
-            if (savedSet.has(listingId)) {
-                savedSet.delete(listingId);
-            } else {
-                savedSet.add(listingId);
-            }
+            try {
+                const response = await fetch(`/listings/${listingId}/save`, {
+                    method: "POST",
+                    headers: { Accept: "application/json" }
+                });
 
-            localStorage.setItem("savedStays", JSON.stringify([...savedSet]));
-            renderButton(button);
+                if (response.redirected) {
+                    // isLoggedIn middleware bounced this to /login
+                    window.location.href = response.url;
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error("Save request failed");
+                }
+
+                const data = await response.json();
+
+                if (!data.saved && button.dataset.removeOnUnsave === "true") {
+                    const card = button.closest(".stay-card");
+                    if (card) {
+                        card.remove();
+                    }
+                    return;
+                }
+
+                renderButton(button, data.saved);
+            } catch (error) {
+                console.error("Could not update wishlist:", error);
+            }
         });
     });
 })();
@@ -143,6 +151,38 @@
     checkIn.min = toInputDate(today);
     checkOut.min = toInputDate(today);
 
+    let unavailableRanges = [];
+    try {
+        unavailableRanges = JSON.parse(bookingForm.dataset.unavailableRanges || "[]")
+            .map((range) => ({
+                start: new Date(range.start),
+                end: new Date(range.end),
+            }));
+    } catch (error) {
+        unavailableRanges = [];
+    }
+
+    let errorMessage = bookingForm.querySelector(".booking-error");
+    if (!errorMessage) {
+        errorMessage = document.createElement("p");
+        errorMessage.className = "booking-error";
+        errorMessage.hidden = true;
+        bookingForm.insertBefore(errorMessage, bookingForm.querySelector(".price-breakdown"));
+    }
+
+    const overlapsUnavailable = (start, end) => {
+        return unavailableRanges.some((range) => start < range.end && end > range.start);
+    };
+
+    const showBookingError = (message) => {
+        errorMessage.textContent = message;
+        errorMessage.hidden = false;
+    };
+
+    const clearBookingError = () => {
+        errorMessage.hidden = true;
+    };
+
     const updateTotals = () => {
         const start = toDate(checkIn.value);
         const end = toDate(checkOut.value);
@@ -150,6 +190,12 @@
 
         if (start && end && end > start) {
             nights = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+        }
+
+        if (start && end && end > start && overlapsUnavailable(start, end)) {
+            showBookingError("Those dates overlap with an existing booking or a host-blocked date. Pick a different range.");
+        } else {
+            clearBookingError();
         }
 
         const subtotal = nightlyPrice * nights;
@@ -163,6 +209,16 @@
         taxAmount.textContent = money.format(taxes);
         bookingTotal.textContent = money.format(total);
     };
+
+    bookingForm.addEventListener("submit", (event) => {
+        const start = toDate(checkIn.value);
+        const end = toDate(checkOut.value);
+
+        if (start && end && overlapsUnavailable(start, end)) {
+            event.preventDefault();
+            showBookingError("Those dates overlap with an existing booking or a host-blocked date. Pick a different range.");
+        }
+    });
 
     checkIn.addEventListener("change", () => {
         const start = toDate(checkIn.value);

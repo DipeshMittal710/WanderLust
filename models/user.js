@@ -11,7 +11,13 @@ const userSchema = new Schema({
         type: String,
         default: "",
         maxlength: 500
-    }
+    },
+    savedListings: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Listing'
+        }
+    ]
 }, { timestamps: true });
 
 userSchema.plugin(passportLocalMongoose.default || passportLocalMongoose);

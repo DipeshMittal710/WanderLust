@@ -24,15 +24,15 @@ router.get("/new",
     isLoggedIn, 
     listingController.renderNewForm);
 
-// Category Filter Route
-router.get(
-    "/category/:category",
-    wrapAsync(listingController.filterByCategory)
+// Wishlist - must come before "/:id" or "wishlist" would be read as an id
+router.get("/wishlist",
+    isLoggedIn,
+    wrapAsync(listingController.myWishlist)
 );
 
-router.get(
-    "/search",
-    wrapAsync(listingController.searchListings)
+router.post("/:id/save",
+    isLoggedIn,
+    wrapAsync(listingController.toggleSave)
 );
 
 router

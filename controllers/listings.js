@@ -1,25 +1,93 @@
 const Listing = require('../models/listing');
+const User = require('../models/user');
+const Booking = require('../models/booking');
+const BlockedDate = require('../models/blockedDate');
 const axios = require("axios");
 
 module.exports.index = async (req, res) => {
-    const allListings = await Listing.find({}).populate("reviews").populate("owner");
+    const {
+        category,
+        q,
+        minPrice,
+        maxPrice,
+        guests,
+        minRating,
+        amenities,
+        country,
+        city
+    } = req.query;
 
-    res.render('listings/index.ejs', {
-        listings: allListings,
-        activeCategory: "All"
-    });
-};
+    const filter = {};
 
-module.exports.filterByCategory = async (req, res) => {
-    const { category } = req.params;
+    if (category && category !== "All") {
+        filter.category = category;
+    }
 
-    const listings = await Listing.find({
-        category: category
-    }).populate("reviews").populate("owner");
+    if (q) {
+        filter.$or = [
+            { title: { $regex: q, $options: "i" } },
+            { location: { $regex: q, $options: "i" } },
+            { country: { $regex: q, $options: "i" } },
+            { category: { $regex: q, $options: "i" } }
+        ];
+    }
+
+    if (minPrice || maxPrice) {
+        filter.price = {};
+        if (minPrice) filter.price.$gte = Number(minPrice);
+        if (maxPrice) filter.price.$lte = Number(maxPrice);
+    }
+
+    if (guests) {
+        filter.maxGuests = { $gte: Number(guests) };
+    }
+
+    if (country) {
+        filter.country = { $regex: country, $options: "i" };
+    }
+
+    if (city) {
+        filter.location = { $regex: city, $options: "i" };
+    }
+
+    let amenityList = [];
+    if (amenities) {
+        amenityList = Array.isArray(amenities) ? amenities : [amenities];
+        filter.amenities = { $all: amenityList };
+    }
+
+    let listings = await Listing.find(filter).populate("reviews").populate("owner");
+
+    if (minRating) {
+        const minRatingNum = Number(minRating);
+        listings = listings.filter(listing => {
+            const reviews = listing.reviews || [];
+            if (!reviews.length) return false;
+            const avg = reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length;
+            return avg >= minRatingNum;
+        });
+    }
+
+    let savedListingIds = [];
+    if (req.user) {
+        const currentUser = await User.findById(req.user._id);
+        savedListingIds = (currentUser.savedListings || []).map(id => id.toString());
+    }
 
     res.render("listings/index.ejs", {
         listings,
-        activeCategory: category
+        activeCategory: category || "All",
+        searchQuery: q || "",
+        savedListingIds,
+        filters: {
+            minPrice: minPrice || "",
+            maxPrice: maxPrice || "",
+            guests: guests || "",
+            minRating: minRating || "",
+            amenities: amenityList,
+            country: country || "",
+            city: city || ""
+        }
     });
 };
 
@@ -44,9 +112,25 @@ module.exports.showListing = async (req, res) => {
         return res.redirect("/listings");
     }
 
+    const activeBookings = await Booking.find({
+        listing: id,
+        status: { $in: ["Pending", "Confirmed", "Completed"] }
+    });
+
+    const blockedDates = await BlockedDate.find({ listing: id }).sort({ startDate: 1 });
+
+    let isSaved = false;
+    if (req.user) {
+        const currentUser = await User.findById(req.user._id);
+        isSaved = (currentUser.savedListings || []).some(savedId => savedId.equals(id));
+    }
+
     res.render("listings/show.ejs", {
         listing,
-        mapToken: process.env.MAP_TOKEN
+        mapToken: process.env.MAP_TOKEN,
+        bookedRanges: activeBookings.map(b => ({ start: b.checkIn, end: b.checkOut })),
+        blockedDates,
+        isSaved
     });
 };
 
@@ -198,26 +282,30 @@ module.exports.destroyListing = async (req, res) => {
     res.redirect("/listings");
 };
 
-module.exports.searchListings = async (req, res) => {
+module.exports.toggleSave = async (req, res) => {
+    const { id } = req.params;
+    const user = await User.findById(req.user._id);
 
-    const q = req.query.q?.trim();
+    const alreadySaved = (user.savedListings || []).some(listingId => listingId.equals(id));
 
-    if (!q) {
-        return res.redirect("/listings");
+    if (alreadySaved) {
+        user.savedListings.pull(id);
+    } else {
+        user.savedListings.push(id);
     }
 
-    const listings = await Listing.find({
-        $or: [
-            { title: { $regex: q, $options: "i" } },
-            { location: { $regex: q, $options: "i" } },
-            { country: { $regex: q, $options: "i" } },
-            { category: { $regex: q, $options: "i" } }
-        ]
-    }).populate("reviews").populate("owner");
+    await user.save();
 
-    res.render("listings/index.ejs", {
-        listings,
-        searchQuery: q,
-        activeCategory: "All"
+    res.json({ saved: !alreadySaved });
+};
+
+module.exports.myWishlist = async (req, res) => {
+    const user = await User.findById(req.user._id).populate({
+        path: "savedListings",
+        populate: [{ path: "reviews" }, { path: "owner" }]
+    });
+
+    res.render("listings/wishlist.ejs", {
+        listings: user.savedListings || []
     });
 };

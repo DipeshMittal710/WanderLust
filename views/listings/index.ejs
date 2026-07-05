@@ -2,20 +2,27 @@
 
 <%
   const categories = [
-    { name: "All", icon: "fa-solid fa-border-all", href: "/listings" },
-    { name: "Trending", icon: "fa-solid fa-fire", href: "/listings/category/Trending" },
-    { name: "Rooms", icon: "fa-solid fa-bed", href: "/listings/category/Rooms" },
-    { name: "Iconic Cities", icon: "fa-solid fa-mountain-city", href: "/listings/category/Iconic%20Cities" },
-    { name: "Mountain", icon: "fa-solid fa-mountain", href: "/listings/category/Mountain" },
-    { name: "Castles", icon: "fa-brands fa-fort-awesome", href: "/listings/category/Castles" },
-    { name: "Arctic", icon: "fa-regular fa-snowflake", href: "/listings/category/Arctic" },
-    { name: "Camping", icon: "fa-solid fa-campground", href: "/listings/category/Camping" },
-    { name: "Farms", icon: "fa-solid fa-cow", href: "/listings/category/Farms" },
-    { name: "Amazing Pools", icon: "fa-solid fa-person-swimming", href: "/listings/category/Amazing%20Pools" },
-    { name: "Domes", icon: "fa-solid fa-igloo", href: "/listings/category/Domes" },
-    { name: "Boats", icon: "fa-solid fa-sailboat", href: "/listings/category/Boats" }
+    { name: "All", icon: "fa-solid fa-border-all" },
+    { name: "Trending", icon: "fa-solid fa-fire" },
+    { name: "Rooms", icon: "fa-solid fa-bed" },
+    { name: "Iconic Cities", icon: "fa-solid fa-mountain-city" },
+    { name: "Mountain", icon: "fa-solid fa-mountain" },
+    { name: "Castles", icon: "fa-brands fa-fort-awesome" },
+    { name: "Arctic", icon: "fa-regular fa-snowflake" },
+    { name: "Camping", icon: "fa-solid fa-campground" },
+    { name: "Farms", icon: "fa-solid fa-cow" },
+    { name: "Amazing Pools", icon: "fa-solid fa-person-swimming" },
+    { name: "Domes", icon: "fa-solid fa-igloo" },
+    { name: "Boats", icon: "fa-solid fa-sailboat" }
   ];
   const selectedCategory = locals.activeCategory || "All";
+  const activeFilters = locals.filters || {};
+  const activeAmenities = activeFilters.amenities || [];
+  const savedListingIds = locals.savedListingIds || [];
+  const amenityOptions = [
+    "Wifi", "Free parking", "Kitchen", "Air conditioning",
+    "Self check-in", "Swimming pool", "TV", "Pet friendly"
+  ];
 %>
 
 <section class="explore-hero">
@@ -27,7 +34,7 @@
     </p>
   </div>
 
-  <form class="hero-search" action="/listings/search" method="GET">
+  <form class="hero-search" action="/listings" method="GET">
     <label>
       <span>Destination</span>
       <input
@@ -35,7 +42,6 @@
         name="q"
         placeholder="Search by city, country, or category"
         value="<%= locals.searchQuery || '' %>"
-        required
       >
     </label>
 
@@ -76,7 +82,7 @@
     <% categories.forEach(category => { %>
       <a
         class="filter-chip <%= selectedCategory === category.name ? 'active' : '' %>"
-        href="<%= category.href %>"
+        href="/listings?category=<%= encodeURIComponent(category.name) %>"
       >
         <i class="<%= category.icon %>"></i>
         <span><%= category.name %></span>
@@ -97,6 +103,66 @@
       </label>
     </div>
   </div>
+</section>
+
+<section class="advanced-filters">
+  <details>
+    <summary><i class="fa-solid fa-sliders"></i> More filters</summary>
+
+    <form method="GET" action="/listings" class="filter-form">
+      <input type="hidden" name="q" value="<%= locals.searchQuery || '' %>">
+      <input type="hidden" name="category" value="<%= selectedCategory !== 'All' ? selectedCategory : '' %>">
+
+      <div class="filter-row">
+        <label>
+          <span>Min price</span>
+          <input type="number" name="minPrice" min="0" value="<%= activeFilters.minPrice %>" placeholder="\u20B90">
+        </label>
+        <label>
+          <span>Max price</span>
+          <input type="number" name="maxPrice" min="0" value="<%= activeFilters.maxPrice %>" placeholder="Any">
+        </label>
+        <label>
+          <span>Guests</span>
+          <input type="number" name="guests" min="1" value="<%= activeFilters.guests %>" placeholder="Any">
+        </label>
+        <label>
+          <span>Min rating</span>
+          <select name="minRating">
+            <option value="">Any</option>
+            <option value="4.5" <%= activeFilters.minRating === '4.5' ? 'selected' : '' %>>4.5+</option>
+            <option value="4" <%= activeFilters.minRating === '4' ? 'selected' : '' %>>4+</option>
+            <option value="3" <%= activeFilters.minRating === '3' ? 'selected' : '' %>>3+</option>
+          </select>
+        </label>
+        <label>
+          <span>Country</span>
+          <input type="text" name="country" value="<%= activeFilters.country %>" placeholder="Any">
+        </label>
+        <label>
+          <span>City</span>
+          <input type="text" name="city" value="<%= activeFilters.city %>" placeholder="Any">
+        </label>
+      </div>
+
+      <div class="filter-amenities">
+        <span class="filter-amenities-label">Amenities</span>
+        <div class="filter-amenities-list">
+          <% amenityOptions.forEach(name => { %>
+            <label class="filter-chip-check">
+              <input type="checkbox" name="amenities" value="<%= name %>" <%= activeAmenities.includes(name) ? "checked" : "" %>>
+              <span><%= name %></span>
+            </label>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-dark">Apply filters</button>
+        <a href="/listings" class="btn btn-outline-dark">Clear all</a>
+      </div>
+    </form>
+  </details>
 </section>
 
 <section class="listing-toolbar">
@@ -142,6 +208,7 @@
           ? cardImageList[0].url
           : "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=70";
         const isGuestFavorite = reviewCount >= 2 || index % 4 === 0;
+        const isSaved = savedListingIds.includes(listing._id.toString());
       %>
 
       <article class="stay-card">
@@ -180,7 +247,7 @@
                   <b>&#8377;<%= listing.price.toLocaleString('en-IN') %></b> night
                 </span>
                 <span class="tax-price">
-                  <b>&#8377;<%= Math.round(listing.price * 1.18).toLocaleString('en-IN') %></b> night
+                  <b>&#8377;<%= Math.round(listing.price * 1.30).toLocaleString('en-IN') %></b> night
                 </span>
               </p>
               <small><%= reviewCount %> reviews</small>
@@ -189,12 +256,12 @@
         </a>
 
         <button
-          class="save-stay-btn"
+          class="save-stay-btn <%= isSaved ? 'is-saved' : '' %>"
           type="button"
           data-listing-id="<%= listing._id %>"
           aria-label="Save <%= listing.title %>"
         >
-          <i class="fa-regular fa-heart"></i>
+          <i class="<%= isSaved ? 'fa-solid' : 'fa-regular' %> fa-heart"></i>
         </button>
       </article>
     <% }) %>

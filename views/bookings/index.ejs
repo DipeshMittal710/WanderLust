@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate') %>
 
 <section class="host-form-page">
-    <div class="host-form-intro">
+    <div class="page-intro">
         <p class="eyebrow">Your trips</p>
         <h1>Bookings</h1>
         <p>Everything you've reserved through WanderLust, in one place.</p>
@@ -14,7 +14,14 @@
             <% bookings.forEach(booking => { %>
                 <%
                   const listing = booking.listing;
-                  const isPast = new Date(booking.checkOut) < new Date();
+                  const isPastCheckout = new Date(booking.checkOut) < new Date();
+                  const effectiveStatus = (booking.status === "Confirmed" && isPastCheckout) ? "Completed" : booking.status;
+                  const statusClass = {
+                    Pending: "trip-status-pending",
+                    Confirmed: "trip-status-upcoming",
+                    Completed: "trip-status-past",
+                    Cancelled: "trip-status-cancelled"
+                  }[effectiveStatus] || "trip-status-upcoming";
                   const checkInStr = new Date(booking.checkIn).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
                   const checkOutStr = new Date(booking.checkOut).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
                   const listingImages = listing
@@ -40,8 +47,8 @@
                                     <%= listing ? [listing.location, listing.country].filter(Boolean).join(", ") : "This stay was removed by its host" %>
                                 </p>
                             </div>
-                            <span class="trip-status <%= isPast ? 'trip-status-past' : 'trip-status-upcoming' %>">
-                                <%= isPast ? "Completed" : "Upcoming" %>
+                            <span class="trip-status <%= statusClass %>">
+                                <%= effectiveStatus %>
                             </span>
                         </div>
                         <p><%= checkInStr %> &rarr; <%= checkOutStr %> &middot; <%= booking.guests %> guest<%= booking.guests === 1 ? '' : 's' %></p>
