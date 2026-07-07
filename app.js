@@ -102,6 +102,11 @@ app.use((req, res, next) => {
 
 // =================== ROUTES ===================
 
+// Redirect homepage to listings
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
+
 app.use("/listings", bookingRoutes);
 app.use("/listings", listingsRoutes);
 app.use("/listings/:id/reviews", reviewsRoutes);
