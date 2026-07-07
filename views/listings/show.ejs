@@ -40,7 +40,7 @@
     const amenities = ((listing.amenities && listing.amenities.length) ? listing.amenities : [])
         .map(name => ({ icon: amenityIcons[name] || "fa-solid fa-circle-check", label: name }));
 
-    const isOwnerOfListing = !!(locals.currUser && listing.owner && locals.currUser._id.equals(listing.owner._id));
+    const isOwnerOfListing = !!(currUser && listing.owner && currUser._id.equals(listing.owner._id));
 
     const fmtDate = (d) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -114,8 +114,15 @@
                 </h2>
                 <p><%= guests %> guest<%= guests === 1 ? '' : 's' %> · <%= bedrooms %> bedroom<%= bedrooms === 1 ? '' : 's' %> · 1 bath</p>
             </div>
-            <div class="host-avatar">
-                <i class="fa-solid fa-circle-user"></i>
+            <div class="host-avatar-block">
+                <div class="host-avatar">
+                    <i class="fa-solid fa-circle-user"></i>
+                </div>
+                <% if (currUser && listing.owner && !currUser._id.equals(listing.owner._id)) { %>
+                    <a href="/listings/<%= listing._id %>/message" class="btn btn-sm btn-outline-dark">
+                        <i class="fa-regular fa-comment-dots"></i> Message host
+                    </a>
+                <% } %>
             </div>
         </section>
 

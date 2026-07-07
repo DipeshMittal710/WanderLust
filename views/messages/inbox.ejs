@@ -1,0 +1,38 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="page-intro">
+    <p class="eyebrow">Messages</p>
+    <h1>Your inbox.</h1>
+    <p>Conversations with guests and hosts, in one place.</p>
+</section>
+
+<% if (conversations.length === 0) { %>
+    <section class="empty-state">
+        <i class="fa-regular fa-comment-dots"></i>
+        <h3>No conversations yet</h3>
+        <p>Message a host from any listing page to start one.</p>
+        <a href="/listings" class="btn btn-dark">Browse stays</a>
+    </section>
+<% } else { %>
+    <div class="inbox-list">
+        <% conversations.forEach(conversation => { %>
+            <%
+              const isGuest = conversation.guest._id.toString() === currentUserId;
+              const otherUser = isGuest ? conversation.host : conversation.guest;
+              const lastMessage = conversation.messages[conversation.messages.length - 1];
+              const listing = conversation.listing;
+              const updatedAtStr = new Date(conversation.updatedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+            %>
+            <a href="/messages/<%= conversation._id %>" class="inbox-row">
+                <div class="inbox-row-main">
+                    <h3><%= otherUser ? otherUser.username : "Unknown user" %></h3>
+                    <p class="text-muted"><%= listing ? listing.title : "Listing no longer available" %></p>
+                    <% if (lastMessage) { %>
+                        <p class="inbox-snippet"><%= lastMessage.body.length > 90 ? lastMessage.body.slice(0, 90) + "..." : lastMessage.body %></p>
+                    <% } %>
+                </div>
+                <span class="text-muted inbox-date"><%= updatedAtStr %></span>
+            </a>
+        <% }) %>
+    </div>
+<% } %>

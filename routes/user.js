@@ -33,6 +33,14 @@ router.get('/logout',
 router.get('/users/:id',
     wrapAsync(userController.showProfile));
 
+router.get('/users/:id/edit',
+    isLoggedIn,
+    wrapAsync(userController.renderEditProfile));
+
+router.put('/users/:id',
+    isLoggedIn,
+    wrapAsync(userController.updateProfile));
+
 router.get('/dashboard',
     isLoggedIn,
     wrapAsync(dashboardController.renderDashboard));

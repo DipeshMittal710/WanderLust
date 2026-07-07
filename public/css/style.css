@@ -263,7 +263,7 @@ a {
     overflow: hidden;
 }
 
-.hero-search label {
+.hero-search > div {
     display: flex;
     flex-direction: column;
     margin: 0;
@@ -284,9 +284,14 @@ a {
     padding: 0.1rem 0 0;
 }
 
-.hero-search button {
+.hero-search input[readonly] {
+    cursor: default;
+}
+
+.hero-search-cta {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.45rem;
     height: 3rem;
     margin: 0 0.55rem;
@@ -296,6 +301,13 @@ a {
     background-color: var(--brand);
     color: #ffffff;
     font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.hero-search-cta:hover {
+    color: #ffffff;
+    background-color: var(--brand-dark);
 }
 
 .market-strip {
@@ -1072,12 +1084,12 @@ a {
         border-radius: 8px;
     }
 
-    .hero-search label {
+    .hero-search > div {
         border-right: 0;
         border-bottom: 1px solid #eeeeee;
     }
 
-    .hero-search button {
+    .hero-search-cta {
         justify-content: center;
         margin: 0.75rem;
     }
@@ -1525,4 +1537,107 @@ a {
 
 .user-menu .nav-user-pill {
     cursor: pointer;
+}
+
+.host-avatar-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+/* Messaging */
+.thread {
+    max-width: 640px;
+    margin: 1.5rem 0 3rem;
+}
+
+.thread-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.thread-bubble-row {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.thread-bubble-row-mine {
+    justify-content: flex-end;
+}
+
+.thread-bubble {
+    max-width: 75%;
+    background: var(--soft);
+    border-radius: 14px;
+    padding: 0.7rem 1rem;
+}
+
+.thread-bubble-mine {
+    background: var(--warm);
+}
+
+.thread-bubble-body {
+    margin: 0 0 0.3rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.thread-bubble-meta {
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+.thread-reply-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.thread-reply-form textarea {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.7rem 0.9rem;
+    resize: vertical;
+}
+
+.inbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 720px;
+}
+
+.inbox-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.inbox-row:hover {
+    background: var(--soft);
+}
+
+.inbox-row-main h3 {
+    margin: 0 0 0.2rem;
+    font-size: 1.05rem;
+}
+
+.inbox-snippet {
+    margin: 0.3rem 0 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.inbox-date {
+    white-space: nowrap;
+    font-size: 0.8rem;
 }

@@ -22,6 +22,7 @@ const listingsRoutes = require("./routes/listing");
 const reviewsRoutes = require("./routes/reviews");
 const userRoutes = require("./routes/user");
 const bookingRoutes = require("./routes/booking");
+const messagesRoutes = require("./routes/messages");
 
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
@@ -89,9 +90,13 @@ passport.deserializeUser(User.deserializeUser());
 // =================== GLOBAL LOCALS ===================
 
 app.use((req, res, next) => {
+    console.log("Global middleware executed");
+    console.log("req.user =", req.user);
+
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     res.locals.currUser = req.user;
+
     next();
 });
 
@@ -101,11 +106,7 @@ app.use("/listings", bookingRoutes);
 app.use("/listings", listingsRoutes);
 app.use("/listings/:id/reviews", reviewsRoutes);
 app.use("/", userRoutes);
-
-// Redirect root URL to listings
-app.get("/", (req, res) => {
-    res.redirect("/listings");
-});
+app.use("/", messagesRoutes);
 
 // =================== 404 ===================
 

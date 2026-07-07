@@ -1,0 +1,23 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="row mt-3">
+    <h1 class="col-6 offset-3">Edit your profile</h1>
+    <div class="col-6 offset-3">
+        <form action="/users/<%= host._id %>?_method=PUT" method="POST" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="bio" class="form-label">About you</label>
+                <textarea
+                    name="bio"
+                    id="bio"
+                    rows="5"
+                    maxlength="500"
+                    class="form-control"
+                    placeholder="Tell guests a bit about yourself..."
+                ><%= host.bio || "" %></textarea>
+                <div class="form-text">Shown on your public host profile. Up to 500 characters.</div>
+            </div>
+            <button class="btn btn-dark add-btn mt-3">Save changes</button>
+            <a href="/users/<%= host._id %>" class="btn btn-outline-dark mt-3">Cancel</a>
+        </form>
+    </div>
+</div>

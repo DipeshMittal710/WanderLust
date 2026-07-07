@@ -1,0 +1,99 @@
+<% layout('layouts/boilerplate') %>
+
+<%
+  const messages = conversation ? conversation.messages : [];
+  const listingTitle = listing ? listing.title : "a listing that's no longer available";
+  const listingId = listing ? listing._id : null;
+%>
+
+<section class="page-intro">
+    <p class="eyebrow">Messages</p>
+    <h1>Conversation with <%= otherUser.username %></h1>
+
+    <p>
+        About
+        <% if (listingId) { %>
+            <a href="/listings/<%= listingId %>"><%= listingTitle %></a>
+        <% } else { %>
+            <%= listingTitle %>
+        <% } %>
+    </p>
+</section>
+
+<section class="thread">
+
+    <% if (messages.length === 0) { %>
+
+        <p class="text-muted">No messages yet — say hello below.</p>
+
+    <% } else { %>
+
+        <div class="thread-messages">
+
+            <% messages.forEach(message => { %>
+
+                <%
+                    const isMine =
+                        currUser &&
+                        message.sender &&
+                        message.sender._id &&
+                        message.sender._id.equals(currUser._id);
+
+                    const senderName = message.sender
+                        ? message.sender.username
+                        : "Unknown";
+
+                    const sentAt = new Date(message.createdAt).toLocaleString(
+                        "en-IN",
+                        {
+                            day: "numeric",
+                            month: "short",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        }
+                    );
+                %>
+
+                <div class="thread-bubble-row <%= isMine ? 'thread-bubble-row-mine' : '' %>">
+                    <div class="thread-bubble <%= isMine ? 'thread-bubble-mine' : '' %>">
+
+                        <p class="thread-bubble-body">
+                            <%= message.body %>
+                        </p>
+
+                        <span class="thread-bubble-meta">
+                            <%= isMine ? "You" : senderName %> &middot; <%= sentAt %>
+                        </span>
+
+                    </div>
+                </div>
+
+            <% }) %>
+
+        </div>
+
+    <% } %>
+
+    <form
+        method="POST"
+        action="<%= replyAction %>"
+        class="thread-reply-form"
+    >
+
+        <textarea
+            name="body"
+            rows="3"
+            placeholder="Write a message..."
+            required
+        ></textarea>
+
+        <button
+            type="submit"
+            class="btn btn-dark"
+        >
+            Send
+        </button>
+
+    </form>
+
+</section>

@@ -26,6 +26,9 @@
                 (<%= totalReviews %> review<%= totalReviews === 1 ? '' : 's' %>)
             <% } %>
         </p>
+        <% if (locals.isSelf) { %>
+            <a href="/users/<%= host._id %>/edit" class="btn btn-sm btn-outline-dark">Edit profile</a>
+        <% } %>
     </div>
     <div class="host-avatar">
         <i class="fa-solid fa-circle-user"></i>

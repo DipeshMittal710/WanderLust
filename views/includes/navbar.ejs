@@ -31,19 +31,37 @@
             name="q"
             placeholder="Search destinations"
             value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
-            required
           />
         </label>
 
-        <span class="nav-search-segment nav-search-static">
+        <label class="nav-search-segment">
           <span>Check in</span>
-          <small>Add dates</small>
-        </span>
+          <input
+            type="date"
+            name="checkIn"
+            value="<%= typeof filters !== 'undefined' ? filters.checkIn : '' %>"
+          >
+        </label>
 
-        <span class="nav-search-segment nav-search-static">
+        <label class="nav-search-segment">
+          <span>Check out</span>
+          <input
+            type="date"
+            name="checkOut"
+            value="<%= typeof filters !== 'undefined' ? filters.checkOut : '' %>"
+          >
+        </label>
+
+        <label class="nav-search-segment">
           <span>Who</span>
-          <small>Add guests</small>
-        </span>
+          <input
+            type="number"
+            name="guests"
+            min="1"
+            placeholder="Add guests"
+            value="<%= typeof filters !== 'undefined' ? filters.guests : '' %>"
+          >
+        </label>
 
         <button class="nav-search-button" type="submit">
           <i class="fa-solid fa-magnifying-glass"></i>
@@ -72,32 +90,13 @@
             </button>
 
             <ul class="dropdown-menu dropdown-menu-end">
-              <li>
-                <a class="dropdown-item" href="/dashboard">
-                  Dashboard
-                </a>
-              </li>
-
-              <li>
-                <a class="dropdown-item" href="/listings/wishlist">
-                  Wishlist
-                </a>
-              </li>
-
-              <li>
-                <a class="dropdown-item" href="/listings/my-bookings">
-                  My Trips
-                </a>
-              </li>
-
+              <li><a class="dropdown-item" href="/dashboard">Dashboard</a></li>
+              <li><a class="dropdown-item" href="/messages">Messages</a></li>
+              <li><a class="dropdown-item" href="/listings/wishlist">Wishlist</a></li>
+              <li><a class="dropdown-item" href="/listings/my-bookings">My Trips</a></li>
+              <li><a class="dropdown-item" href="/users/<%= currUser._id %>/edit">Edit Profile</a></li>
               <li><hr class="dropdown-divider"></li>
-
-              <li>
-                <a class="dropdown-item text-danger" href="/logout">
-                  Logout
-                </a>
-              </li>
-
+              <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
             </ul>
           </div>
 

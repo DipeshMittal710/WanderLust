@@ -14,7 +14,9 @@ module.exports.index = async (req, res) => {
         minRating,
         amenities,
         country,
-        city
+        city,
+        checkIn,
+        checkOut
     } = req.query;
 
     const filter = {};
@@ -68,6 +70,35 @@ module.exports.index = async (req, res) => {
         });
     }
 
+    if (checkIn && checkOut) {
+        const start = new Date(checkIn);
+        const end = new Date(checkOut);
+
+        if (!isNaN(start) && !isNaN(end) && start < end) {
+            const listingIds = listings.map(l => l._id);
+
+            const overlappingBookings = await Booking.find({
+                listing: { $in: listingIds },
+                status: { $in: ["Pending", "Confirmed", "Completed"] },
+                checkIn: { $lt: end },
+                checkOut: { $gt: start }
+            }).distinct("listing");
+
+            const overlappingBlocks = await BlockedDate.find({
+                listing: { $in: listingIds },
+                startDate: { $lt: end },
+                endDate: { $gt: start }
+            }).distinct("listing");
+
+            const unavailableIds = new Set([
+                ...overlappingBookings.map(id => id.toString()),
+                ...overlappingBlocks.map(id => id.toString())
+            ]);
+
+            listings = listings.filter(l => !unavailableIds.has(l._id.toString()));
+        }
+    }
+
     let savedListingIds = [];
     if (req.user) {
         const currentUser = await User.findById(req.user._id);
@@ -86,7 +117,9 @@ module.exports.index = async (req, res) => {
             minRating: minRating || "",
             amenities: amenityList,
             country: country || "",
-            city: city || ""
+            city: city || "",
+            checkIn: checkIn || "",
+            checkOut: checkOut || ""
         }
     });
 };

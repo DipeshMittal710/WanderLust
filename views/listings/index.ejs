@@ -34,32 +34,27 @@
     </p>
   </div>
 
-  <form class="hero-search" action="/listings" method="GET">
-    <label>
+  <div class="hero-search" aria-hidden="true">
+    <div>
       <span>Destination</span>
-      <input
-        type="search"
-        name="q"
-        placeholder="Search by city, country, or category"
-        value="<%= locals.searchQuery || '' %>"
-      >
-    </label>
+      <input type="text" value="Search by city, country" readonly tabindex="-1">
+    </div>
 
-    <label>
+    <div>
       <span>Check in</span>
-      <input type="text" value="Add dates" readonly>
-    </label>
+      <input type="text" value="Add dates" readonly tabindex="-1">
+    </div>
 
-    <label>
+    <div>
       <span>Guests</span>
-      <input type="text" value="Add guests" readonly>
-    </label>
+      <input type="text" value="Add guests" readonly tabindex="-1">
+    </div>
 
-    <button type="submit">
+    <a href="#explore-results" class="hero-search-cta">
       <i class="fa-solid fa-magnifying-glass"></i>
       Search
-    </button>
-  </form>
+    </a>
+  </div>
 </section>
 
 <section class="market-strip" aria-label="Marketplace highlights">
@@ -112,6 +107,8 @@
     <form method="GET" action="/listings" class="filter-form">
       <input type="hidden" name="q" value="<%= locals.searchQuery || '' %>">
       <input type="hidden" name="category" value="<%= selectedCategory !== 'All' ? selectedCategory : '' %>">
+      <input type="hidden" name="checkIn" value="<%= activeFilters.checkIn %>">
+      <input type="hidden" name="checkOut" value="<%= activeFilters.checkOut %>">
 
       <div class="filter-row">
         <label>
@@ -165,7 +162,7 @@
   </details>
 </section>
 
-<section class="listing-toolbar">
+<section class="listing-toolbar" id="explore-results">
   <div>
     <p class="eyebrow"><%= locals.searchQuery ? 'Search results' : selectedCategory + ' homes' %></p>
     <h2>
