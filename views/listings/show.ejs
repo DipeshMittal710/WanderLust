@@ -17,7 +17,7 @@
     const imageUrl = imageList[0] ? imageList[0].url : fallbackImageUrl;
     const photoSlots = [0, 1, 2, 3].map(i => imageList[i] ? imageList[i].url : imageUrl);
     const extraPhotoCount = Math.max(0, imageList.length - 4);
-    const hostName = listing.owner && listing.owner.username ? listing.owner.username : "WanderLust host";
+    const hostName = listing.owner && listing.owner.username ? listing.owner.username : "AuraHomes host";
     const guests = listing.maxGuests || 2;
     const bedrooms = Math.max(1, Math.ceil(guests / 2));
     const hasCoordinates = listing.geometry
@@ -428,7 +428,7 @@
                             <span id="subtotalAmount">&#8377;<%= nightlyPrice.toLocaleString('en-IN') %></span>
                         </div>
                         <div>
-                            <span>WanderLust service fee</span>
+                            <span>AuraHomes service fee</span>
                             <span id="serviceFeeAmount">&#8377;<%= serviceFee.toLocaleString('en-IN') %></span>
                         </div>
                         <div>

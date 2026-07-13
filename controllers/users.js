@@ -15,7 +15,7 @@ module.exports.signup = async(req, res) => {
         if(err) {
             return next(err);
         }   
-        req.flash("success", "Welcome to Wanderlust!");
+        req.flash("success", "Welcome to AuraHomes!");
     res.redirect('/listings');
     });
     
@@ -30,7 +30,7 @@ module.exports.renderLogin = (req, res) => {
 };
 
 module.exports.login = async(req, res) => {
-    req.flash("success", "Welcome back to Wanderlust, you are logged in!");
+    req.flash("success", "Welcome back to AuraHomes, you are logged in!");
     let redirectUrl = res.locals.redirectUrl || '/listings';
     res.redirect(redirectUrl);
 };
