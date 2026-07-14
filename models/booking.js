@@ -38,6 +38,11 @@ const bookingSchema = new Schema({
         type: String,
         enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
         default: "Pending"
+    },
+
+    priceAdjustmentNote: {
+        type: String,
+        default: ""
     }
 });
 

@@ -53,6 +53,9 @@
                         </div>
                         <p><%= checkInStr %> &rarr; <%= checkOutStr %> &middot; <%= booking.guests %> guest<%= booking.guests === 1 ? '' : 's' %></p>
                         <p class="trip-total"><b>&#8377;<%= booking.totalPrice.toLocaleString('en-IN') %></b> total</p>
+                        <% if (booking.priceAdjustmentNote) { %>
+                            <p class="trip-adjustment-note"><i class="fa-solid fa-circle-info"></i> <%= booking.priceAdjustmentNote %></p>
+                        <% } %>
                     </div>
                 </article>
             <% }) %>

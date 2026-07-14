@@ -60,7 +60,24 @@
                             <td>&#8377;<%= booking.totalPrice.toLocaleString('en-IN') %></td>
                             <td class="dashboard-actions">
                                 <% if (listing) { %>
-                                    <form method="POST" action="/listings/<%= listing._id %>/bookings/<%= booking._id %>/approve">
+                                    <form method="POST" action="/listings/<%= listing._id %>/bookings/<%= booking._id %>/approve" class="approve-adjust-form">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">&#8377;</span>
+                                            <input
+                                                type="number"
+                                                name="adjustedTotal"
+                                                min="0"
+                                                value="<%= booking.totalPrice %>"
+                                                aria-label="Adjusted total for this booking"
+                                            >
+                                        </div>
+                                        <input
+                                            type="text"
+                                            name="adjustmentNote"
+                                            placeholder="Note for guest (optional)"
+                                            class="form-control form-control-sm"
+                                            maxlength="200"
+                                        >
                                         <button type="submit" class="btn btn-sm btn-dark">Approve</button>
                                     </form>
                                     <form method="POST" action="/listings/<%= listing._id %>/bookings/<%= booking._id %>/reject">

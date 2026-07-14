@@ -1245,6 +1245,12 @@ a {
     margin-top: 0.2rem;
 }
 
+.trip-adjustment-note {
+    margin-top: 0.3rem;
+    font-size: 0.85rem;
+    color: var(--teal);
+}
+
 @media (max-width: 640px) {
     .trip-card {
         flex-direction: column;
@@ -1477,6 +1483,17 @@ a {
 .dashboard-actions {
     display: flex;
     gap: 0.5rem;
+}
+
+.approve-adjust-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 170px;
+}
+
+.approve-adjust-form .input-group input {
+    max-width: 100px;
 }
 
 .status-pill {

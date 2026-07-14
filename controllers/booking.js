@@ -115,7 +115,29 @@ module.exports.approveBooking = async (req, res) => {
     const listing = await findOwnedListingOr404(req, res);
     if (!listing) return;
 
-    await Booking.findByIdAndUpdate(req.params.bookingId, { status: "Confirmed" });
+    const booking = await Booking.findById(req.params.bookingId);
+
+    if (!booking) {
+        req.flash("error", "Booking not found.");
+        return res.redirect("/dashboard");
+    }
+
+    const update = { status: "Confirmed" };
+
+    const { adjustedTotal, adjustmentNote } = req.body;
+    const newTotal = Number(adjustedTotal);
+
+    // Only touches the price if a valid, non-empty number was actually
+    // submitted - leaving the field untouched keeps the original total.
+    if (adjustedTotal !== undefined && adjustedTotal !== "" && !isNaN(newTotal) && newTotal >= 0) {
+        update.totalPrice = Math.round(newTotal);
+    }
+
+    if (typeof adjustmentNote === "string") {
+        update.priceAdjustmentNote = adjustmentNote.trim();
+    }
+
+    await Booking.findByIdAndUpdate(req.params.bookingId, update);
 
     req.flash("success", "Booking confirmed.");
     res.redirect("/dashboard");
